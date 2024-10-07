@@ -7,7 +7,9 @@ class Users extends Base
 
     public function getAll()
     {
-        $query = $this->db->query("SELECT * FROM users");
+        $query = $this->db->query("
+        SELECT user_id, name, email, role, phone 
+        FROM users");
 
         $query->execute();
 
@@ -16,7 +18,11 @@ class Users extends Base
 
     public function getById($id)
     {
-        $query = $this->db->prepare("SELECT * FROM users WHERE id = ?");
+        $query = $this->db->prepare("
+        SELECT * 
+        FROM users 
+        WHERE id = ?");
+
         $query->execute([$id]);
 
         return $query->fetch();
@@ -38,12 +44,12 @@ class Users extends Base
     public function create($data)
     {
         // Hash the password
-        $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
         $query = $this->db->prepare("
             INSERT INTO users 
             (name, email, password, role, phone, created_at) 
-            VALUES (?, ?, ?, ?, ?, NOW())
+            VALUES (?, ?, ?, ?, ?, Default)
         ");
 
         $query->execute([
