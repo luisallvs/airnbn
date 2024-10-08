@@ -4,24 +4,34 @@ session_start();
 define("ENV", parse_ini_file('.env'));
 define("ROOT", "");
 
-$request_uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
-$controller = !empty($request_uri[0]) ? $request_uri[0] : "home";
-$method = "index";
+/* Get the request URI and remove leading/trailing slashes */
+$request_uri = trim($_SERVER["REQUEST_URI"], "/");
+$url_parts = explode("/", $request_uri);
 
-// Build the controller file path
+/* Set default controller and method */
+$controller = !empty($url_parts[0]) ? $url_parts[0] : "home";
+$method = !empty($url_parts[1]) ? $url_parts[1] : "index";
+$param = !empty($url_parts[2]) ? $url_parts[2] : null;
+
+/* Define the controller file pat */
 $controllerFile = "controllers/" . $controller . ".php";
 
-// Check if controller file exists
+/* Check if the controller file exists */
 if (file_exists($controllerFile)) {
     require_once $controllerFile;
 
-    // Instantiate the controller
-    if (class_exists($controller)) {
-        $controllerObject = new $controller();
-        $controllerObject->$method();
+    /* Check if the method exists as a function */
+    if (function_exists($method)) {
+        if ($param) {
+            call_user_func($method, $param);
+        } else {
+            call_user_func($method);
+        }
     } else {
-        die("Class not found: " . $controller);
+        http_response_code(404);
+        echo "Method not found: " . htmlspecialchars($method);
     }
 } else {
-    die("Controller file not found: " . $controllerFile);
+    http_response_code(404);
+    echo "Controller file not found: " . htmlspecialchars($controllerFile);
 }

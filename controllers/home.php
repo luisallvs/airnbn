@@ -1,10 +1,10 @@
 <?php
 
-class home
-{
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-    public function index()
-    {
-        require_once 'views/home.php';
-    }
+function index()
+{
+    require_once 'views/home.php';
 }

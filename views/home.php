@@ -9,6 +9,8 @@
 
 <body>
     <?php include 'templates/navbar.php'; ?>
+
+    <h1>Home</h1>
 </body>
 
 </html>

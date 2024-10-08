@@ -19,7 +19,7 @@ class Users extends Base
     public function getById($id)
     {
         $query = $this->db->prepare("
-        SELECT * 
+        SELECT user_id, name, email, role, phone 
         FROM users 
         WHERE id = ?");
 
@@ -31,7 +31,7 @@ class Users extends Base
     public function getByEmail($email)
     {
         $query = $this->db->prepare("
-            SELECT user_id, email, password, role, phone
+            SELECT user_id, name, email, password, role, phone
             FROM users
             WHERE email = ?
         ");
