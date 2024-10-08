@@ -8,22 +8,36 @@ class Users extends Base
     public function getAll()
     {
         $query = $this->db->query("
-        SELECT user_id, name, email, role, phone 
-        FROM users");
+        SELECT 
+            user_id, 
+            name, 
+            email, 
+            role, 
+            phone 
+        FROM 
+            users");
 
         $query->execute();
 
         return $query->fetchAll();
     }
 
-    public function getById($id)
+    public function getById($user_id)
     {
         $query = $this->db->prepare("
-        SELECT user_id, name, email, role, phone 
-        FROM users 
-        WHERE id = ?");
+        SELECT 
+            user_id, 
+            name, 
+            email, 
+            role, 
+            phone, 
+            created_at
+        FROM 
+            users 
+        WHERE 
+            user_id = ?");
 
-        $query->execute([$id]);
+        $query->execute([$user_id]);
 
         return $query->fetch();
     }
@@ -31,9 +45,17 @@ class Users extends Base
     public function getByEmail($email)
     {
         $query = $this->db->prepare("
-            SELECT user_id, name, email, password, role, phone
-            FROM users
-            WHERE email = ?
+            SELECT 
+                user_id, 
+                name, 
+                email, 
+                password, 
+                role, 
+                phone
+            FROM 
+                users
+            WHERE 
+                email = ?
         ");
 
         $query->execute([$email]);
@@ -48,8 +70,14 @@ class Users extends Base
 
         $query = $this->db->prepare("
             INSERT INTO users 
-            (name, email, password, role, phone, created_at) 
-            VALUES (?, ?, ?, ?, ?, Default)
+                (name, 
+                email, 
+                password, 
+                role, 
+                phone, 
+                created_at) 
+            VALUES 
+                (?, ?, ?, ?, ?, Default)
         ");
 
         $query->execute([
@@ -62,5 +90,26 @@ class Users extends Base
 
         // Return the last inserted ID
         return $this->db->lastInsertId();
+    }
+
+    public function update($user_id, $data)
+    {
+        $query = $this->db->prepare("
+            UPDATE 
+                users 
+            SET 
+                name = ?, 
+                email = ?, 
+                phone = ? 
+            WHERE 
+                user_id = ?
+        ");
+
+        return $query->execute([
+            $data['name'],
+            $data['email'],
+            $data['phone'],
+            $user_id
+        ]);
     }
 }

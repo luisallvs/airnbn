@@ -1,5 +1,9 @@
 <?php
-session_start();
+
+/* Start the session */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 define("ENV", parse_ini_file('.env'));
 define("ROOT", "");
