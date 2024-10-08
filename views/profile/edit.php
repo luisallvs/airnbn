@@ -16,16 +16,27 @@
     <?php endif; ?>
 
     <form action="<?= ROOT ?>/profile/edit" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name']) ?>" required><br>
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br>
-
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required><br>
-
-        <button type="submit">Save Changes</button>
+        <ul>
+            <li>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name']) ?>" required><br>
+            </li>
+            <li>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br>
+            </li>
+            <li>
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required><br>
+            </li>
+            <li>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password"><br>
+            </li>
+            <div>
+                <button type="submit">Save Changes</button>
+            </div>
+        </ul>
     </form>
 </body>
 

@@ -94,6 +94,9 @@ class Users extends Base
 
     public function update($user_id, $data)
     {
+
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+
         $query = $this->db->prepare("
             UPDATE 
                 users 
@@ -101,6 +104,7 @@ class Users extends Base
                 name = ?, 
                 email = ?, 
                 phone = ? 
+                password = ?
             WHERE 
                 user_id = ?
         ");
@@ -109,6 +113,7 @@ class Users extends Base
             $data['name'],
             $data['email'],
             $data['phone'],
+            $hashedPassword,
             $user_id
         ]);
     }

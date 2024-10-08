@@ -3,19 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Registrar</title>
+    <title>Register</title>
 </head>
 
 <body>
     <?php include 'templates/navbar.php'; ?>
-    <h1>Crie sua conta</h1>
-    <p>Se já tiver uma conta, <a href="<?= ROOT ?>/login/"> faça o login</a></p>
+    <h1>Make a new account</h1>
+    <p>Already have an account? <a href="<?= ROOT ?>/login/"> Login here</a></p>
 
     <?php if (isset($message)) {
         echo '<p>' . $message . '</p>';
     } ?>
 
-    <form action="/register" method="POST">
+    <form action="/register" method="POST" enctype="multipart/form-data">
         <div>
             <label>Name:
                 <input type="text" name="name" required><br>
@@ -39,7 +39,7 @@
         <div>
             <label>Role:
                 <select name="role">
-                    <option value="user">Guest</option>
+                    <option value="guest">Guest</option>
                     <option value="host">Host</option>
                 </select>
             </label>

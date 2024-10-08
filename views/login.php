@@ -8,8 +8,8 @@
 
 <body>
     <?php include 'templates/navbar.php'; ?>
-    <h1>Entre na sua conta</h1>
-    <p>Se ainda não tiver conta, <a href="<?= ROOT ?>/register/"> crie uma facilmente</a></p>
+    <h1>Login</h1>
+    <p>Don't have an account yet? <a href="<?= ROOT ?>/register/"> Register here</a></p>
 
     <?php if (isset($message)) {
         echo '<p>' . $message . '</p>';
@@ -18,12 +18,12 @@
     <form action="/login" method="POST">
         <div>
             <label>Email:
-                <input type="email" name="email" required><br>
+                <input type="email" name="email" required>
             </label>
         </div>
         <div>
             <label>Password:
-                <input type="password" name="password" required><br>
+                <input type="password" name="password" required>
             </label>
         </div>
         <div>
