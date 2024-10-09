@@ -19,15 +19,15 @@
         <ul>
             <li>
                 <label for="name">Name:</label>
-                <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required><br>
+                <input type="text" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>" required><br>
             </li>
             <li>
                 <label for="email">Email:</label>
-                <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br>
+                <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required><br>
             </li>
             <li>
                 <label for="phone">Phone:</label>
-                <input type="text" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required><br>
+                <input type="text" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" required><br>
             </li>
             <li>
                 <label for="current_password">Current password:</label>

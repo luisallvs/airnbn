@@ -13,7 +13,8 @@ class Users extends Base
             name, 
             email, 
             role, 
-            phone 
+            phone,
+            profile_picture
         FROM 
             users");
 
@@ -53,7 +54,8 @@ class Users extends Base
                 email, 
                 password, 
                 role, 
-                phone
+                phone,
+                profile_picture
             FROM 
                 users
             WHERE 

@@ -21,6 +21,7 @@ function index()
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_profile_picture'] = $user['profile_picture'];
 
                 http_response_code(200);
                 header('Location: /');
