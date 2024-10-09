@@ -21,13 +21,17 @@ function index()
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['user_name'] = $user['name'];
+
+                http_response_code(200);
                 header('Location: /');
                 exit;
             } else {
-                $message = "Email ou senha incorretos.";
+                http_response_code(401);
+                $message = "Email or password is incorrect.";
             }
         } else {
-            $message = "Preencha os dados corretamente.";
+            http_response_code(400);
+            $message = "Please fill in all fields.";
         }
     }
 

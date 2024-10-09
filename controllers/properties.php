@@ -1,17 +1,30 @@
 <?php
 
-/* Start session if not  started */
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 require_once 'models/Properties.php';
+
+function index()
+{
+
+    /* Make sure user is logged in and is a host */
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
+        http_response_code(401);
+        header('Location: /login');
+        exit;
+    }
+
+    $model = new Properties();
+    $properties = $model->getByUserId($_SESSION['user_id']);
+
+    http_response_code(200);
+    require 'views/properties/index.php';
+}
 
 function create()
 {
 
-    /* MAke sureuser is logged in and is a host */
+    /* Make sure user is logged in and is a host */
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
+        http_response_code(401);
         header('Location: /login');
         exit;
     }
@@ -40,14 +53,8 @@ function create()
         exit;
     }
 
+    http_response_code(200);
     require 'views/properties/create.php';
-}
-
-function index()
-{
-    $model = new Properties();
-    $properties = $model->getByUserId($_SESSION['user_id']);
-    require 'views/properties/index.php';
 }
 
 function update($property_id)
@@ -56,8 +63,9 @@ function update($property_id)
     $property = $model->getById($property_id);
 
     /* Check if the property belongs to the logged-in user */
-    if ($property['user_id'] !== $_SESSION['user_id']) {
-        die("Access denied.");
+    if (!$property || $property['user_id'] !== $_SESSION['user_id']) {
+        http_response_code(403);
+        exit;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -76,20 +84,44 @@ function update($property_id)
             'availability_end' => $_POST['availability_end']
         ];
 
-        $model->update($data);
-
-        /* Redirect to properties list */
-        header('Location: /properties');
-        exit;
+        if ($model->update($data)) {
+            http_response_code(200);
+            header('Location: /properties');
+            exit;
+        } else {
+            http_response_code(500);
+            exit;
+        }
     }
 
+    http_response_code(200);
     require 'views/properties/update.php';
 }
 
 function delete($property_id)
 {
+    /* Make sure user is logged in and is a host */
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
+        http_response_code(401);
+        header('Location: /login');
+        exit;
+    }
+
     $model = new Properties();
-    $model->delete($property_id, $_SESSION['user_id']);
-    header('Location: /properties');
-    exit;
+    $property = $model->getById($property_id);
+
+    /* Check if the property belongs to the logged-in user */
+    if (!$property || $property['user_id'] !== $_SESSION['user_id']) {
+        http_response_code(403);
+        exit;
+    }
+
+    if ($model->delete($property_id, $_SESSION['user_id'])) {
+        http_response_code(200);
+        header('Location: /home');
+        exit;
+    } else {
+        http_response_code(500);
+        exit;
+    }
 }

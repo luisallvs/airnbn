@@ -37,6 +37,11 @@
             </label>
         </div>
         <div>
+            <label>Phone:
+                <input type="text" name="phone" required><br>
+            </label>
+        </div>
+        <div>
             <label>Role:
                 <select name="role">
                     <option value="guest">Guest</option>
@@ -45,9 +50,8 @@
             </label>
         </div>
         <div>
-            <label>Phone:
-                <input type="text" name="phone" required><br>
-            </label>
+            <label for="profile_picture">Profile Picture:</label>
+            <input type="file" name="profile_picture" accept="image/*">
         </div>
         <div>
             <button type="submit">Register</button>

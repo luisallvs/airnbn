@@ -15,23 +15,35 @@
         <p><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
 
-    <form action="<?= ROOT ?>/profile/edit" method="POST">
+    <form action="<?= ROOT ?>/profile/update" method="POST" enctype="multipart/form-data">
         <ul>
             <li>
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name']) ?>" required><br>
+                <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required><br>
             </li>
             <li>
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br>
+                <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br>
             </li>
             <li>
                 <label for="phone">Phone:</label>
-                <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required><br>
+                <input type="text" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required><br>
             </li>
             <li>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password"><br>
+                <label for="current_password">Current password:</label>
+                <input type="password" name="current_password"><br>
+            </li>
+            <li>
+                <label for="password">New password:</label>
+                <input type="password" name="new_password"><br>
+            </li>
+            <li>
+                <label for="password_confirm">Confirm new password:</label>
+                <input type="password" name="confirm_password"><br>
+            </li>
+            <li>
+                <label for="profile_picture">Profile Picture:</label>
+                <input type="file" name="profile_picture" accept="image/*">
             </li>
             <div>
                 <button type="submit">Save Changes</button>

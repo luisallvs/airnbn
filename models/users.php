@@ -29,8 +29,10 @@ class Users extends Base
             user_id, 
             name, 
             email, 
+            password,
             role, 
             phone, 
+            profile_picture,
             created_at
         FROM 
             users 
@@ -68,6 +70,31 @@ class Users extends Base
         // Hash the password
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
+        /* handle profile picure */
+        $profilePicturePath = null;
+        if (!empty($data['profile_picture'])) {
+            /* decode base64 */
+            $decodedImage = base64_decode($data['profile_picture']);
+
+            /* create a unique file name */
+            $fileName = bin2hex(random_bytes(16)) . '.jpg';
+
+            /* define path where image will be stored */
+            $imageDirectory = __DIR__ . '/../images';
+
+            if (!is_dir($imageDirectory)) {
+                mkdir($imageDirectory, 0777, true);
+            }
+
+            $filePath = $imageDirectory . '/' . $fileName;
+
+            /* save image */
+            file_put_contents($filePath, $decodedImage);
+
+            /* store the relative path */
+            $profilePicturePath = "/images/" . $fileName;
+        }
+
         $query = $this->db->prepare("
             INSERT INTO users 
                 (name, 
@@ -75,9 +102,10 @@ class Users extends Base
                 password, 
                 role, 
                 phone, 
+                profile_picture,
                 created_at) 
             VALUES 
-                (?, ?, ?, ?, ?, Default)
+                (?, ?, ?, ?, ?, ?, Default)
         ");
 
         $query->execute([
@@ -85,7 +113,8 @@ class Users extends Base
             $data['email'],
             $hashedPassword,
             $data['role'],
-            $data['phone']
+            $data['phone'],
+            $profilePicturePath
         ]);
 
         // Return the last inserted ID
@@ -95,26 +124,62 @@ class Users extends Base
     public function update($user_id, $data)
     {
 
-        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-
-        $query = $this->db->prepare("
+        /* prepare base query */
+        $query = "
             UPDATE 
-                users 
-            SET 
-                name = ?, 
-                email = ?, 
-                phone = ? 
-                password = ?
-            WHERE 
-                user_id = ?
-        ");
+                users
+            SET
+                name = ?,
+                email = ?,
+                phone = ?
+        ";
 
-        return $query->execute([
+        /* store params */
+        $params = [
             $data['name'],
             $data['email'],
-            $data['phone'],
-            $hashedPassword,
-            $user_id
-        ]);
+            $data['phone']
+        ];
+
+        /* check if password is provide */
+        if (!empty($data['password'])) {
+            $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+            $query .= ", password = ?";
+            $params[] = $hashedPassword;
+        }
+
+        /* check if profile picture is provided */
+        if (!empty($data["profile_picture"])) {
+            /* decode base64 */
+            $decodedImage = base64_decode($data['profile_picture']);
+            $fileName = bin2hex(random_bytes(16)) . '.jpg';
+            $imageDirectory = __DIR__ . '/../images';
+
+            if (!is_dir($imageDirectory)) {
+                mkdir($imageDirectory, 0777, true);
+            }
+
+            $filePath = $imageDirectory . '/' . $fileName;
+
+            /* save image */
+            file_put_contents($filePath, $decodedImage);
+
+            /* store the relative path */
+            $profilePicturePath = "/images/" . $fileName;
+
+            $query .= ", profile_picture = ?";
+            $params[] = $profilePicturePath;
+        }
+
+        /* where clause */
+        $query .= "
+            WHERE
+                user_id = ?
+        ";
+        $params[] = $user_id;
+
+        /* prepare and execute query */
+        $stmt = $this->db->prepare($query);
+        return $stmt->execute($params);
     }
 }

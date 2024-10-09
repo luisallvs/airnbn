@@ -10,8 +10,15 @@ function index()
             'password' => $_POST['password'],
             'password_confirm' => $_POST['password_confirm'],
             'role' => htmlspecialchars($_POST['role']),
-            'phone' => htmlspecialchars($_POST['phone'])
+            'phone' => htmlspecialchars($_POST['phone']),
+            "profile_picture" => null
         ];
+
+        /* Handle profile picture */
+        if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+            $imageData = file_get_contents($_FILES['profile_picture']['tmp_name']);
+            $data['profile_picture'] = base64_encode($imageData);
+        }
 
         /* Validate user input */
         if (
@@ -36,16 +43,20 @@ function index()
                     $_SESSION['user_name'] = $data['name'];
                     $_SESSION['user_role'] = $data['role'];
 
+                    http_response_code(200);
                     header('Location: /');
                     exit;
                 } else {
-                    $message = "Erro ao criar a conta.";
+                    http_response_code(500);
+                    $message = "Error creating user.";
                 }
             } else {
-                $message = "Email já registrado.";
+                http_response_code(409);
+                $message = "Email already registered.";
             }
         } else {
-            $message = "Preencha os dados corretamente e confirme a senha.";
+            http_response_code(400);
+            $message = "Please fill in all fields and make sure the password is at least 8 characters long.";
         }
     }
 
