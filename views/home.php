@@ -12,7 +12,13 @@
 
     <h1>Welcome to Airnbn</h1>
 
-    <h2>Hello, <?= htmlspecialchars($_SESSION['user_name']) ?>!</h2>
+    <h2>Hello,
+        <?php if (isset($_SESSION['user_name'])): ?>
+            <?= htmlspecialchars($_SESSION['user_name']) ?>!
+        <?php else: ?>
+            Guest!
+        <?php endif; ?>
+    </h2>
 
     <?php if (!empty($_SESSION['user_profile_picture']) && file_exists(__DIR__ . '/../' . $_SESSION['user_profile_picture'])): ?>
         <img src="<?= ROOT . htmlspecialchars($_SESSION['user_profile_picture']) ?>" alt="Profile Picture" style="max-width: 200px; max-height: 200px; border-radius: 50%;">

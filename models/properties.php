@@ -39,6 +39,30 @@ class Properties extends Base
         return $this->db->lastInsertId();
     }
 
+    /* Get all properties */
+
+    public function getAll()
+    {
+        $query = $this->db->prepare("
+        SELECT 
+            property_id, 
+            name, 
+            description, 
+            city, 
+            price_per_night, 
+            max_guests, 
+            availability_start, 
+            availability_end
+        FROM 
+            properties 
+        WHERE 
+            availability_end >= CURDATE()
+    ");
+
+        $query->execute();
+        return $query->fetchAll();
+    }
+
     /* GEt properties for a specific user */
     public function getByUserId($user_id)
     {
@@ -93,6 +117,31 @@ class Properties extends Base
         $query->execute([$property_id]);
 
         return $query->fetch();
+    }
+
+    public function getPropertiesByHost($host_user_id)
+    {
+        $query = $this->db->prepare("
+        SELECT
+            property_id,
+            user_id,
+            name,
+            description,
+            address,
+            city,
+            country,
+            price_per_night,
+            max_guests,
+            availability_start,
+            availability_end
+            created_at,
+            updated_at
+        FROM 
+            properties 
+        WHERE user_id = ?
+    ");
+        $query->execute([$host_user_id]);
+        return $query->fetchAll();
     }
 
     /* Update a property */

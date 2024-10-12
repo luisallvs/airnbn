@@ -52,7 +52,7 @@ function update()
         $newPassword = $_POST['new_password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        /* handle profile picture */
+        /* Handle profile picture */
         $profilePicture = null;
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
             $imageData = file_get_contents($_FILES['profile_picture']['tmp_name']);
@@ -60,11 +60,7 @@ function update()
         }
 
         /* Validate input */
-        if (empty($name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL) || empty($phone)) {
-            http_response_code(400);
-            $message = "Please fill in all fields correctly.";
-        } else {
-
+        if (!empty($name) && !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL) && !empty($phone)) {
             $updateData = [
                 'name' => $name,
                 'email' => $email,
@@ -92,27 +88,27 @@ function update()
 
                 /* Update user data in the database */
                 if ($model->update($user_id, $updateData)) {
+                    $updatedUser = $model->getById($user_id);
 
                     /* Update session variables */
-                    $_SESSION['user_name'] = $name;
-                    $_SESSION['user_email'] = $email;
-                    $_SESSION['user_phone'] = $phone;
-
-                    if (isset($updateData['profile_picture'])) {
-                        $_SESSION['user_profile_picture'] = $updateData['profile_picture'];
-                    }
+                    $_SESSION['user_name'] = $updatedUser['name'];
+                    $_SESSION['user_email'] = $updatedUser['email'];
+                    $_SESSION['user_phone'] = $updatedUser['phone'];
+                    $_SESSION['user_profile_picture'] = $updatedUser['profile_picture'];
 
                     http_response_code(200);
                     $message = "Profile updated successfully.";
-                    // Refresh the user data after updating
+
                     $user = $model->getById($user_id);
                 } else {
                     http_response_code(500);
                     $message = "An error occurred while updating your profile.";
                 }
             }
+        } else {
+            http_response_code(400);
+            $message = "Please fill in all fields correctly.";
         }
     }
-
     require 'views/profile/edit.php';
 }

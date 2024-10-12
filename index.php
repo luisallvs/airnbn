@@ -26,6 +26,7 @@ if (file_exists($controllerFile)) {
 
     /* Check if the method exists as a function */
     if (function_exists($method)) {
+        echo "Calling method $method in $controllerFile"; //!!!!debug!!!!!
         if ($param) {
             call_user_func($method, $param);
         } else {
@@ -33,9 +34,16 @@ if (file_exists($controllerFile)) {
         }
     } else {
         http_response_code(404);
-        echo "Method not found: " . htmlspecialchars($method);
+        loadErrorPage(404, "Method not found: " . htmlspecialchars($method));
     }
 } else {
     http_response_code(404);
-    echo "Controller file not found: " . htmlspecialchars($controllerFile);
+    loadErrorPage(404, "Controller file not found: " . htmlspecialchars($controllerFile));
+}
+
+/* fucntion to load error page */
+function loadErrorPage($code, $message)
+{
+    include "views/errors/error.php";
+    exit();
 }

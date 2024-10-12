@@ -8,13 +8,15 @@
             <li><a href="<?= ROOT ?>/logout">Logout</a></li>
 
             <?php if ($_SESSION['user_role'] === 'host'): ?>
-                <!-- Link for hosts to create a property -->
+                <!-- Links for host users -->
                 <li><a href="<?= ROOT ?>/properties/create">Create Property</a></li>
-            <?php endif; ?>
+                <li><a href="<?= ROOT ?>/reservations/manage">Manage Reservations</a></li>
+                <li><a href="<?= ROOT ?>/properties/manage">My Properties</a></li>
 
-            <?php if ($_SESSION['user_role'] === 'guest'): ?>
-                <!-- Link for guests to view properties list -->
-                <li><a href="<?= ROOT ?>/properties">Properties List</a></li>
+            <?php elseif ($_SESSION['user_role'] === 'guest'): ?>
+                <!-- Links for guest users -->
+                <li><a href="<?= ROOT ?>/properties/">Properties List</a></li>
+                <li><a href="<?= ROOT ?>/reservations">My Reservations</a></li>
             <?php endif; ?>
 
             <li>Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?>! (<?= htmlspecialchars($_SESSION['user_role']) ?>)</li>

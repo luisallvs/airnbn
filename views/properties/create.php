@@ -10,8 +10,8 @@
     <?php include __DIR__ . '/../templates/navbar.php'; ?>
 
     <h1>Add a Property</h1>
-    <form action="<?= ROOT ?>/properties/create" method="POST">
-        <label>Name:</label>
+    <form action="<?= ROOT ?>/properties/create" method="POST" enctype="multipart/form-data">
+        <label>Property Name:</label>
         <input type="text" name="name" required><br>
 
         <label>Description:</label>
@@ -27,7 +27,7 @@
         <input type="text" name="country" required><br>
 
         <label>Price per Night:</label>
-        <input type="number" step="0.01" name="price_per_night" required><br>
+        <input type="number" name="price_per_night" required><br>
 
         <label>Max Guests:</label>
         <input type="number" name="max_guests" required><br>
@@ -37,6 +37,9 @@
 
         <label>Availability End:</label>
         <input type="date" name="availability_end" required><br>
+
+        <label>Propety Images:</label>
+        <input type="file" name="property_images[]" multiple accept="image/*" required>
 
         <button type="submit">Add Property</button>
     </form>

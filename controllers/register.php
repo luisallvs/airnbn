@@ -43,6 +43,9 @@ function index()
                     $_SESSION['user_name'] = $data['name'];
                     $_SESSION['user_role'] = $data['role'];
 
+                    $user = $model->getById($createdUserId);
+                    $_SESSION['user_profile_picture'] = $user['profile_picture'];
+
                     http_response_code(200);
                     header('Location: /');
                     exit;
