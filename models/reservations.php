@@ -15,10 +15,10 @@ class Reservations extends Base
                 check_out, 
                 total_price, 
                 status, 
-                is_paid
+                is_paid,
                 created_at) 
             VALUES 
-                (?, ?, ?, ?, ?, 'pending', ?,NOW())
+                (?, ?, ?, ?, ?, 'pending', ?, NOW())
         ");
 
         $query->execute([
@@ -145,40 +145,15 @@ class Reservations extends Base
     public function updateReservationStatus($reservation_id, $status)
     {
         $query = $this->db->prepare("
-            UPDATE reservations 
-            SET status = ? 
-            WHERE reservation_id = ?
+            UPDATE 
+                reservations 
+            SET 
+                status = ? 
+            WHERE 
+                reservation_id = ?
         ");
 
         return $query->execute([$status, $reservation_id]);
-    }
-
-    public function confirm($reservation_id)
-    {
-        $query = $this->db->prepare("
-            UPDATE 
-                reservations
-            SET 
-                status = 'confirmed'
-            WHERE 
-                reservation_id = ?
-        ");
-
-        return $query->execute([$reservation_id]);
-    }
-
-    public function cancel($reservation_id)
-    {
-        $query = $this->db->prepare("
-            UPDATE 
-                reservations
-            SET 
-                status = 'canceled'
-            WHERE 
-                reservation_id = ?
-        ");
-
-        return $query->execute([$reservation_id]);
     }
 
     public function isAvailable($property_id, $check_in, $check_out)
@@ -229,5 +204,13 @@ class Reservations extends Base
 
         $query->execute([$property_id]);
         return $query->fetchAll();
+    }
+
+    public function markAsPaid($reservation_id)
+    {
+        $query = $this->db->prepare("
+        UPDATE reservations SET is_paid = 1 WHERE reservation_id = ?
+    ");
+        return $query->execute([$reservation_id]);
     }
 }

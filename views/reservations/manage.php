@@ -38,23 +38,33 @@
                         <td><?= htmlspecialchars($reservation['property_name']) ?></td>
                         <td><?= htmlspecialchars($reservation['check_in']) ?></td>
                         <td><?= htmlspecialchars($reservation['check_out']) ?></td>
-                        <td><?= htmlspecialchars($reservation['total_price']) ?></td>
-                        <td><?= htmlspecialchars($reservation['status']) ?></td>
-                        <td><?= htmlspecialchars($reservation['is_paid']) ?></td>
+                        <td><?= htmlspecialchars($reservation['total_price']) ?> €</td>
+                        <td>
+                            <!-- Display status correctly -->
+                            <?php if ($reservation['status'] === 'confirmed'): ?>
+                                Confirmed
+                            <?php elseif ($reservation['status'] === 'canceled'): ?>
+                                Canceled
+                            <?php else: ?>
+                                Pending
+                            <?php endif; ?>
+                        </td>
+                        <td><?= htmlspecialchars($reservation['is_paid'] ? 'Paid' : 'Not Paid') ?></td>
                         <td>
                             <?php if ($reservation['status'] === 'pending'): ?>
-                                <form action="<?= ROOT ?>/reservations/confirm/<?= $reservation['reservation_id'] ?>" method="POST" style="display:inline;">
+                                <form action="<?= ROOT ?>/reservations/confirm/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST">
                                     <button type="submit">Confirm</button>
                                 </form>
-                                <form action="<?= ROOT ?>/reservations/cancel/<?= $reservation['reservation_id'] ?>" method="POST" style="display:inline;">
+                                <form action="<?= ROOT ?>/reservations/cancel/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST">
                                     <button type="submit">Cancel</button>
                                 </form>
                             <?php else: ?>
-                                <span><?= ucfirst($reservation['status']) ?></span>
+                                <?= ucfirst(htmlspecialchars($reservation['status'])) ?>
                             <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
+
             </tbody>
         </table>
     <?php else: ?>

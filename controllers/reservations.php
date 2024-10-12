@@ -2,6 +2,8 @@
 
 require_once "models/reservations.php";
 require_once "models/properties.php";
+require_once "models/payments.php";
+require_once "models/paymentMethods.php";
 
 /* function to create a new reservation */
 
@@ -35,7 +37,6 @@ function create($property_id)
             return;
         }
 
-        /* Check if the property is available for the selected dates */
         if (!$model->isAvailable($property_id, $checkIn, $checkOut)) {
             http_response_code(400);
             $message = "The property is not available for the selected dates.";
@@ -55,12 +56,13 @@ function create($property_id)
             'check_out' => $checkOut,
             'total_price' => $total_price,
             'status' => 'pending',
-            'is_paid' => 0 /* set to 0 initially */
+            'is_paid' => 0
         ]);
 
         if ($reservation_id) {
-            http_response_code(201);
-            header("Location: /reservations/view/{$reservation_id}");
+            http_response_code(200);
+            // No echo or output before this header.
+            header("Location: " . ROOT . "/payments/create/{$reservation_id}");
             exit;
         } else {
             http_response_code(500);
@@ -105,10 +107,6 @@ function manage()
 
     $reservations = $model->getReservationsByHost($user_id);
 
-    foreach ($reservations as &$reservation) {
-        $reservation['is_paid'] = $reservation['is_paid'] ? 'Paid' : 'Not Paid';
-    }
-
     http_response_code(200);
     require 'views/reservations/manage.php';
 }
@@ -117,7 +115,6 @@ function manage()
 
 function confirm($reservation_id)
 {
-
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
         header('Location: /login');
@@ -125,7 +122,9 @@ function confirm($reservation_id)
     }
 
     $model = new Reservations();
-    if ($model->confirm($reservation_id)) {
+
+    // Ensure this actually returns a true/false response from the model
+    if ($model->updateReservationStatus($reservation_id, 'confirmed')) {
         $message = "Reservation confirmed successfully";
         http_response_code(200);
     } else {
@@ -141,7 +140,6 @@ function confirm($reservation_id)
 
 function cancel($reservation_id)
 {
-
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
         header('Location: /login');
@@ -149,7 +147,9 @@ function cancel($reservation_id)
     }
 
     $model = new Reservations();
-    if ($model->cancel($reservation_id)) {
+
+    // Ensure this actually returns a true/false response from the model
+    if ($model->updateReservationStatus($reservation_id, 'canceled')) {
         $message = "Reservation cancelled successfully";
         http_response_code(200);
     } else {
