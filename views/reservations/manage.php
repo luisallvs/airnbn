@@ -28,6 +28,7 @@
                     <th>Check-out</th>
                     <th>Total Price</th>
                     <th>Status</th>
+                    <th>Payment Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -39,6 +40,7 @@
                         <td><?= htmlspecialchars($reservation['check_out']) ?></td>
                         <td><?= htmlspecialchars($reservation['total_price']) ?></td>
                         <td><?= htmlspecialchars($reservation['status']) ?></td>
+                        <td><?= htmlspecialchars($reservation['is_paid']) ?></td>
                         <td>
                             <?php if ($reservation['status'] === 'pending'): ?>
                                 <form action="<?= ROOT ?>/reservations/confirm/<?= $reservation['reservation_id'] ?>" method="POST" style="display:inline;">

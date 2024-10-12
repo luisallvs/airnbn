@@ -15,9 +15,10 @@ class Reservations extends Base
                 check_out, 
                 total_price, 
                 status, 
+                is_paid
                 created_at) 
             VALUES 
-                (?, ?, ?, ?, ?, 'pending', NOW())
+                (?, ?, ?, ?, ?, 'pending', ?,NOW())
         ");
 
         $query->execute([
@@ -25,7 +26,8 @@ class Reservations extends Base
             $data['property_id'],
             $data['check_in'],
             $data['check_out'],
-            $data['total_price']
+            $data['total_price'],
+            $data['is_paid']
         ]);
 
         return $this->db->lastInsertId();
@@ -45,6 +47,7 @@ class Reservations extends Base
             r.check_out, 
             r.total_price, 
             r.status, 
+            r.is_paid,
             r.created_at 
         FROM 
             reservations r
@@ -69,6 +72,7 @@ class Reservations extends Base
                 r.check_out, 
                 r.total_price, 
                 r.status, 
+                r.is_paid,
                 r.created_at 
             FROM 
                 reservations r
@@ -95,6 +99,7 @@ class Reservations extends Base
             r.check_out,
             r.total_price,
             r.status,
+            r.is_paid,
             r.created_at,
             r.updated_at,
             p.name AS property_name
@@ -121,6 +126,7 @@ class Reservations extends Base
                 r.check_out, 
                 r.total_price, 
                 r.status, 
+                r.is_paid,
                 r.created_at 
             FROM 
                 reservations r

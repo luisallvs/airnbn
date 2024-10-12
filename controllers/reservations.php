@@ -54,7 +54,8 @@ function create($property_id)
             'check_in' => $checkIn,
             'check_out' => $checkOut,
             'total_price' => $total_price,
-            'status' => 'pending'
+            'status' => 'pending',
+            'is_paid' => 0 /* set to 0 initially */
         ]);
 
         if ($reservation_id) {
@@ -103,6 +104,10 @@ function manage()
     $model = new Reservations();
 
     $reservations = $model->getReservationsByHost($user_id);
+
+    foreach ($reservations as &$reservation) {
+        $reservation['is_paid'] = $reservation['is_paid'] ? 'Paid' : 'Not Paid';
+    }
 
     http_response_code(200);
     require 'views/reservations/manage.php';
@@ -174,6 +179,9 @@ function showDetails($reservation_id)
         http_response_code(403);
         exit("You are not authorized to view this reservation.");
     }
+
+    /* check if paid */
+    $isPaid = $reservation['is_paid'] ? 'Paid' : 'Not Paid';
 
     http_response_code(200);
     require 'views/reservations/showDetails.php';

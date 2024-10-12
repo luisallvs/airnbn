@@ -19,6 +19,7 @@
         <p>Check-out: <?= htmlspecialchars($reservation['check_out']) ?></p>
         <p>Total Price: $<?= htmlspecialchars($reservation['total_price']) ?></p>
         <p>Status: <?= htmlspecialchars($reservation['status']) ?></p>
+        <p>Payment Status: <?= htmlspecialchars($isPaid) ?></p>
 
         <?php if ($reservation['status'] === 'pending'): ?>
             <form action="<?= ROOT ?>/reservations/cancel/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST">
