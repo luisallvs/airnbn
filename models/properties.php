@@ -123,24 +123,32 @@ class Properties extends Base
     {
         $query = $this->db->prepare("
         SELECT
-            properties.property_id,
-            properties.name,
-            properties.description,
-            properties.city,
-            properties.country,
-            properties.price_per_night,
-            properties.max_guests,
-            properties.availability_start,
-            properties.availability_end,
-            property_images.image_url
+            p.property_id,
+            p.name,
+            p.description,
+            p.city,
+            p.country,
+            p.price_per_night,
+            p.max_guests,
+            p.availability_start,
+            p.availability_end,
+            MIN(pi.image_url) AS image_url -- ensure that gets tje first image
         FROM 
-            properties
+            properties p
         LEFT JOIN 
-            property_images ON properties.property_id = property_images.property_id
+            property_images pi ON p.property_id = pi.property_id
         WHERE 
-            properties.user_id = ?
+            p.user_id = ?
         GROUP BY 
-            properties.property_id
+            p.property_id, 
+            p.name, 
+            p.description, 
+            p.city, 
+            p.country, 
+            p.price_per_night, 
+            p.max_guests, 
+            p.availability_start, 
+            p.availability_end
     ");
         $query->execute([$host_user_id]);
         return $query->fetchAll();

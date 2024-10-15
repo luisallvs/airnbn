@@ -41,4 +41,24 @@ class Payments extends Base
         $query->execute([$payment_id]);
         return $query->fetch();
     }
+
+    /* Get total earnings by host */
+    public function getTotalEarningsByHost($user_id)
+    {
+        $query = $this->db->prepare("
+        SELECT 
+            SUM(p.amount) 
+                as total_earnings
+        FROM 
+            payments p
+        JOIN 
+            reservations r ON p.reservation_id = r.reservation_id
+        JOIN 
+            properties prop ON r.property_id = prop.property_id
+        WHERE 
+            prop.user_id = ? AND p.status = 'completed'
+    ");
+        $query->execute([$user_id]);
+        return $query->fetchColumn();
+    }
 }

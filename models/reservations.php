@@ -206,6 +206,54 @@ class Reservations extends Base
         return $query->fetchAll();
     }
 
+    /* Get upcoming reservations by host */
+    public function getUpcomingReservationsByHost($user_id)
+    {
+        $query = $this->db->prepare("
+        SELECT 
+            r.reservation_id,
+            r.check_in, 
+            r.check_out, 
+            r.status, 
+            r.total_price, 
+            p.name as property_name 
+        FROM 
+            reservations r
+        JOIN 
+            properties p ON r.property_id = p.property_id
+        WHERE 
+            p.user_id = ? AND r.check_in >= CURDATE()
+    ");
+        $query->execute([$user_id]);
+        return $query->fetchAll();
+    }
+
+    /* Get recent activities by host */
+    public function getRecentActivitiesByHost($user_id)
+    {
+        $query = $this->db->prepare("
+        SELECT 
+            r.reservation_id, 
+            r.check_in, 
+            r.check_out, 
+            r.status, 
+            r.created_at, 
+            p.name as property_name
+        FROM 
+            reservations r
+        JOIN 
+            properties p ON r.property_id = p.property_id
+        WHERE 
+            p.user_id = ?
+        ORDER BY 
+            r.created_at DESC
+        LIMIT 
+            10
+    ");
+        $query->execute([$user_id]);
+        return $query->fetchAll();
+    }
+
     public function markAsPaid($reservation_id)
     {
         $query = $this->db->prepare("
