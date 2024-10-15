@@ -15,7 +15,7 @@
     <div class="container mt-4">
         <h1>Edit Property: <?= htmlspecialchars($property['name']) ?></h1>
 
-        <form action="<?= ROOT ?>/properties/update/<?= htmlspecialchars($property['property_id']) ?>" method="POST">
+        <form action="<?= ROOT ?>/properties/update/<?= htmlspecialchars($property['property_id']) ?>" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="name" class="form-label">Property Name:</label>
                 <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($property['name']) ?>" required>
@@ -59,6 +59,33 @@
             <div class="mb-3">
                 <label for="availability_end" class="form-label">Availability End:</label>
                 <input type="date" name="availability_end" class="form-control" value="<?= htmlspecialchars($property['availability_end']) ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <h3>Existing Images</h3>
+                <div class="row">
+                    <?php if (!empty($images)): ?>
+                        <?php foreach ($images as $image): ?>
+                            <div class="col-md-4">
+                                <div class="card mb-3">
+                                    <img src="<?= ROOT . htmlspecialchars($image['image_url']) ?>" class="card-img-top" alt="Property Image" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <label>
+                                            <input type="checkbox" name="delete_images[]" value="<?= htmlspecialchars($image['images_id']) ?>"> Delete this image
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>No images found for this property.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="property_images" class="form-label">Upload New Images:</label>
+                <input type="file" name="property_images[]" class="form-control" multiple accept="image/*">
             </div>
 
             <button type="submit" class="btn btn-primary">Save Changes</button>

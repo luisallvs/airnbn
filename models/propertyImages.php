@@ -20,11 +20,29 @@ class PropertyImages extends Base
         ]);
     }
 
+    public function getById($image_id)
+    {
+        $query = $this->db->prepare("
+            SELECT 
+                images_id,
+                property_id,
+                image_url
+            FROM 
+                property_images 
+            WHERE 
+                images_id = ?
+        ");
+        $query->execute([$image_id]);
+        return $query->fetch();
+    }
+
     public function getByPropertyId($property_id)
     {
         $query = $this->db->prepare("
             SELECT 
-                image_url 
+                images_id,
+                property_id,
+                image_url
             FROM 
                 property_images
             WHERE 
@@ -32,5 +50,16 @@ class PropertyImages extends Base
         ");
         $query->execute([$property_id]);
         return $query->fetchAll();
+    }
+
+    public function delete($image_id)
+    {
+        $query = $this->db->prepare("
+        DELETE FROM 
+            property_images 
+        WHERE 
+            images_id = ?
+    ");
+        return $query->execute([$image_id]);
     }
 }

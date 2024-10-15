@@ -3,6 +3,46 @@
 require_once 'models/Properties.php';
 require_once 'models/propertyImages.php';
 
+function uploadPropertyImages($files, $property_id, $imageModel, $uploadDir, $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'], $maxFileSize = 5000000)
+{
+    /* Create upload directory if it doesn't exist */
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $uploadedImages = [];
+
+    foreach ($files['tmp_name'] as $key => $tmp_name) {
+        $originalName = $files['name'][$key];
+        $fileSize = $files['size'][$key];
+        $fileType = pathinfo($originalName, PATHINFO_EXTENSION);
+
+        /* Check if the file is an image and its size is within the allowed limit */
+        if (!empty($tmp_name) && in_array(strtolower($fileType), $allowedExtensions) && $fileSize <= $maxFileSize) {
+
+            $imageData = file_get_contents($tmp_name);
+
+            /* Generate a random file name */
+            $fileName = bin2hex(random_bytes(16)) . '.' . $fileType;
+            $filePath = $uploadDir . $fileName;
+
+            /* Save the image file */
+            if (file_put_contents($filePath, $imageData)) {
+                /* Store the image URL in the database */
+                $imageUrl = '/images/properties/' . $fileName;
+                $imageModel->create([
+                    'property_id' => $property_id,
+                    'image_url' => $imageUrl
+                ]);
+                $uploadedImages[] = $imageUrl;
+            }
+        }
+    }
+
+    return $uploadedImages;  // Return the list of uploaded images
+}
+
+
 function index()
 {
     $model = new Properties();
@@ -87,6 +127,7 @@ function create()
 
         /* load model */
         $model = new Properties();
+        $imageModel = new PropertyImages();
         $user_id = $_SESSION['user_id'];
 
         /* Sanitize user input */
@@ -108,29 +149,13 @@ function create()
 
         /* handle images of the property */
         if ($property_id && isset($_FILES['property_images'])) {
-            $imageModel = new PropertyImages();
-
-            foreach ($_FILES['property_images']['tmp_name'] as $key => $tmp_name) {
-                if (!empty($tmp_name)) {
-                    $imageData = file_get_contents($tmp_name);
-                    $fileName = bin2hex(random_bytes(16)) . '.jpg';
-                    $imageDirectory = __DIR__ . '/../images';
-
-                    if (!is_dir($imageDirectory)) {
-                        mkdir($imageDirectory, 0777, true);
-                    }
-
-                    $filePath = $imageDirectory . '/' . $fileName;
-                    file_put_contents($filePath, $imageData);
-
-                    $imageUrl = '/images/' . $fileName;
-
-                    $imageModel->create([
-                        'property_id' => $property_id,
-                        'image_url' => $imageUrl
-                    ]);
-                }
-            }
+            $uploadDir = __DIR__ . '/../images/properties/';
+            uploadPropertyImages(
+                $_FILES['property_images'], /* the files array */
+                $property_id,                /* The property ID */
+                $imageModel,                  /* The image model */
+                $uploadDir                    /* The upload directory */
+            );
         }
 
         /* Redirect to properties list */
@@ -153,6 +178,10 @@ function update($property_id)
         exit;
     }
 
+    /* fetch existing images */
+    $imageModel = new PropertyImages();
+    $images = $imageModel->getByPropertyId($property_id);
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Sanitize user input */
         $data = [
@@ -170,6 +199,31 @@ function update($property_id)
         ];
 
         if ($model->update($data)) {
+
+            /* handle deletion of images */
+            if (!empty($_POST['delete_images'])) {
+                foreach ($_POST['delete_images'] as $imageId) {
+                    $image = $imageModel->getById($imageId);
+                    if ($image) {
+                        /* Delete the image */
+                        unlink(__DIR__ . '/../' . $image['image_url']);
+
+                        /* Delete the image record from the database */
+                        $imageModel->delete($imageId);
+                    }
+                }
+            }
+
+            if (!empty($_FILES['property_images']['name'][0])) {
+                $uploadDir = __DIR__ . '/../images/properties/';
+                uploadPropertyImages(
+                    $_FILES['property_images'], /* the files array */
+                    $property_id,                /* The property ID */
+                    $imageModel,                  /* The image model */
+                    $uploadDir                    /* The upload directory */
+                );
+            }
+
             http_response_code(200);
             header('Location: /properties/manageSingle/' . $property_id);
             exit;
@@ -206,9 +260,17 @@ function delete($property_id)
         return;
     }
 
+    if ($model->hasActiveOrFuturePayments($property_id)) {
+        http_response_code(403);
+        $errorCode = 403;
+        $errorMessage = "You cannot delete this property because it has payments associated with it.";
+        require 'views/errors/error.php';
+        return;
+    }
+
     if ($model->delete($property_id, $_SESSION['user_id'])) {
         http_response_code(200);
-        header('Location: /home');
+        header('Location: /properties/manage');
         exit;
     } else {
         http_response_code(500);

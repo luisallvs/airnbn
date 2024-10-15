@@ -180,11 +180,30 @@ class Properties extends Base
         ]);
     }
 
+    public function hasActiveOrFuturePayments($property_id)
+    {
+        $query = $this->db->prepare("
+            SELECT 
+                COUNT(p.payment_id) 
+            FROM 
+                payments p
+            JOIN 
+                reservations r ON p.reservation_id = r.reservation_id
+            WHERE 
+                r.property_id = ?
+            AND 
+                r.check_out > CURDATE()  -- Check if the reservation's check-out date is in the future or today
+        ");
+        $query->execute([$property_id]);
+        return $query->fetchColumn() > 0;  // Returns true if there are active or future payments
+    }
+
     /* Delete a property */
     public function delete($property_id, $user_id)
     {
         $query = $this->db->prepare("
-            DELETE FROM properties 
+            DELETE FROM 
+                properties 
             WHERE 
                 property_id = ? 
             AND 

@@ -28,6 +28,11 @@
                 <div class="mt-4">
                     <!-- Edit Property Button -->
                     <a href="<?= ROOT ?>/properties/update/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-warning">Edit Property</a>
+
+                    <!-- Delete Property Button -->
+                    <form action="<?= ROOT ?>/properties/delete/<?= htmlspecialchars($property['property_id']) ?>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this property?')">Delete Property</button>
+                    </form>
                 </div>
                 <div class="mt-4">
                     <a href="<?= ROOT ?>/properties/manage" class="btn btn-secondary">Go Back</a>
