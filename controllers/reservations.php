@@ -5,6 +5,30 @@ require_once "models/properties.php";
 require_once "models/payments.php";
 require_once "models/paymentMethods.php";
 
+/* fucntion to list users reservations */
+
+function index()
+{
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        header('Location: /login');
+        exit;
+    }
+
+    $model = new Reservations();
+
+    $user_id = $_SESSION['user_id'];
+    $reservations = $model->getReservationsByUser($user_id);
+
+    foreach ($reservations as &$reservation) {
+        $reservation["payment_status"] = $reservation["is_paid"] ? "Paid" : "Not Paid";
+    }
+
+    http_response_code(200);
+    require 'views/reservations/index.php';
+}
+
+
 /* function to create a new reservation */
 
 function create($property_id)
@@ -71,25 +95,6 @@ function create($property_id)
     }
 
     require 'views/reservations/create.php';
-}
-
-/* fucntion to list users reservations */
-
-function index()
-{
-    if (!isset($_SESSION['user_id'])) {
-        http_response_code(401);
-        header('Location: /login');
-        exit;
-    }
-
-    $model = new Reservations();
-
-    $user_id = $_SESSION['user_id'];
-    $reservations = $model->getReservationsByUser($user_id);
-
-    http_response_code(200);
-    require 'views/reservations/index.php';
 }
 
 /* function for hosts to manage reservations for their properties */

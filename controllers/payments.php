@@ -17,16 +17,30 @@ function create($reservation_id)
 
     if (!$reservation) {
         http_response_code(404);
-        exit('Reservation not found.');
+        $errorCode = 404;
+        $errorMessage = 'Reservation not found.';
+        require 'views/errors/error.php';
+        return;
     }
 
     if ($reservation['is_paid'] == 1) {
         http_response_code(400);
-        exit('This reservation has already been paid for.');
+        $errorCode = 400;
+        $errorMessage = 'This reservation has already been paid for.';
+        require 'views/errors/error.php';
+        return;
     }
 
-    $methodModel = new PaymentMethods();
-    $methods = $methodModel->getAllPaymentMethods();
+    if ($reservation["user_id"] !== $_SESSION['user_id']) {
+        http_response_code(403);
+        $errorCode = 403;
+        $errorMessage = 'You are not authorized to pay for this reservation.';
+        require 'views/errors/error.php';
+        return;
+    }
+
+    $PaymentMethodModel = new PaymentMethods();
+    $paymentMethods = $PaymentMethodModel->getAllPaymentMethods();
 
     require 'views/payments/create.php';
 }

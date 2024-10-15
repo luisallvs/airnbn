@@ -5,15 +5,8 @@ require_once 'models/propertyImages.php';
 
 function index()
 {
-    /* Make sure user is logged in */
-    if (!isset($_SESSION['user_id'])) {
-        http_response_code(401);
-        header('Location: /login');
-        exit;
-    }
-
     $model = new Properties();
-    $properties = $model->getAll();
+    $properties = $model->getAllWithImages();
 
     http_response_code(200);
     require 'views/properties/index.php';
@@ -24,8 +17,10 @@ function manage()
     /* Make sure user is logged in and is a host */
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'Unauthorized access.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $user_id = $_SESSION['user_id'];
@@ -38,20 +33,36 @@ function manage()
     require 'views/properties/manage.php';
 }
 
-function showDetails($property_id)
+
+function manageSingle($property_id)
 {
-    if (!isset($_SESSION['user_id'])) {
-        http_response_code(401);
-        header('Location: /login');
-        exit;
+    $model = new Properties();
+    $property = $model->getById($property_id);
+    $imageModel = new PropertyImages();
+    $images = $imageModel->getByPropertyId($property_id);
+
+    if (!$property || $property['user_id'] !== $_SESSION['user_id']) {
+        http_response_code(403);
+        $errorCode = 403;
+        $errorMessage = 'Unauthorized access.';
+        require 'views/errors/error.php';
+        return;
     }
 
+    require 'views/properties/manageSingle.php';
+}
+
+function showDetails($property_id)
+{
     $model = new Properties();
     $property = $model->getById($property_id);
 
     if (!$property) {
         http_response_code(404);
-        exit("Property not found");
+        $errorCode = 404;
+        $errorMessage = 'Property not found.';
+        require 'views/errors/error.php';
+        return;
     }
 
     /* load property images */
@@ -160,7 +171,7 @@ function update($property_id)
 
         if ($model->update($data)) {
             http_response_code(200);
-            header('Location: /properties');
+            header('Location: /properties/manageSingle/' . $property_id);
             exit;
         } else {
             http_response_code(500);
@@ -177,8 +188,10 @@ function delete($property_id)
     /* Make sure user is logged in and is a host */
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = "You are not authorized to perform this action.";
+        require 'views/errors/error.php';
+        return;
     }
 
     $model = new Properties();
@@ -187,7 +200,10 @@ function delete($property_id)
     /* Check if the property belongs to the logged-in user */
     if (!$property || $property['user_id'] !== $_SESSION['user_id']) {
         http_response_code(403);
-        exit;
+        $errorCode = 403;
+        $errorMessage = "You do not have permission to delete this property.";
+        require 'views/errors/error.php';
+        return;
     }
 
     if ($model->delete($property_id, $_SESSION['user_id'])) {
@@ -196,6 +212,9 @@ function delete($property_id)
         exit;
     } else {
         http_response_code(500);
-        exit;
+        $errorCode = 500;
+        $errorMessage = "Something went wrong on our end. Please try again later.";
+        require 'views/errors/error.php';
+        return;
     }
 }

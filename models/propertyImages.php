@@ -23,10 +23,14 @@ class PropertyImages extends Base
     public function getByPropertyId($property_id)
     {
         $query = $this->db->prepare("
-            SELECT image_url FROM property_images
-            WHERE property_id = ?
+            SELECT 
+                image_url 
+            FROM 
+                property_images
+            WHERE 
+                property_id = ?
         ");
         $query->execute([$property_id]);
-        return $query->fetchAll(PDO::FETCH_COLUMN);
+        return $query->fetchAll();
     }
 }

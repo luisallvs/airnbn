@@ -49,6 +49,7 @@ class Properties extends Base
             name, 
             description, 
             city, 
+            country,
             price_per_night, 
             max_guests, 
             availability_start, 
@@ -63,30 +64,29 @@ class Properties extends Base
         return $query->fetchAll();
     }
 
-    /* GEt properties for a specific user */
-    public function getByUserId($user_id)
+    public function getAllWithImages()
     {
         $query = $this->db->prepare("
-            SELECT 
-                property_id, 
-                user_id, 
-                name, 
-                description, 
-                address, 
-                city, 
-                country, 
-                price_per_night, 
-                max_guests, 
-                availability_start, 
-                availability_end, 
-                created_at, 
-                updated_at
-            FROM 
-                properties 
-            WHERE 
-                user_id = ?
-        ");
-        $query->execute([$user_id]);
+        SELECT 
+            p.property_id, 
+            p.name, 
+            p.description, 
+            p.city, 
+            p.country, 
+            p.price_per_night, 
+            p.max_guests,
+            p.availability_start,
+            p.availability_end,
+            pi.image_url
+        FROM 
+            properties p
+        LEFT JOIN 
+            property_images pi ON p.property_id = pi.property_id
+        GROUP BY 
+            p.property_id
+    ");
+
+        $query->execute();
         return $query->fetchAll();
     }
 
@@ -123,22 +123,24 @@ class Properties extends Base
     {
         $query = $this->db->prepare("
         SELECT
-            property_id,
-            user_id,
-            name,
-            description,
-            address,
-            city,
-            country,
-            price_per_night,
-            max_guests,
-            availability_start,
-            availability_end
-            created_at,
-            updated_at
+            properties.property_id,
+            properties.name,
+            properties.description,
+            properties.city,
+            properties.country,
+            properties.price_per_night,
+            properties.max_guests,
+            properties.availability_start,
+            properties.availability_end,
+            property_images.image_url
         FROM 
-            properties 
-        WHERE user_id = ?
+            properties
+        LEFT JOIN 
+            property_images ON properties.property_id = property_images.property_id
+        WHERE 
+            properties.user_id = ?
+        GROUP BY 
+            properties.property_id
     ");
         $query->execute([$host_user_id]);
         return $query->fetchAll();

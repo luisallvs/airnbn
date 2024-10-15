@@ -209,7 +209,12 @@ class Reservations extends Base
     public function markAsPaid($reservation_id)
     {
         $query = $this->db->prepare("
-        UPDATE reservations SET is_paid = 1 WHERE reservation_id = ?
+        UPDATE 
+            reservations 
+        SET 
+            is_paid = 1 
+        WHERE 
+            reservation_id = ?
     ");
         return $query->execute([$reservation_id]);
     }
