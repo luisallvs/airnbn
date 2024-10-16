@@ -8,8 +8,10 @@ function create($reservation_id)
 {
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to make a reservation.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $reservationModel = new Reservations();
@@ -49,8 +51,10 @@ function submit($reservation_id)
 {
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $reservationModel = new Reservations();
@@ -58,17 +62,26 @@ function submit($reservation_id)
 
     if (!$reservation) {
         http_response_code(404);
-        exit('Reservation not found.');
+        $errorCode = 404;
+        $errorMessage = 'Reservation not found.';
+        require 'views/errors/error.php';
+        return;
     }
 
     if ($reservation['is_paid'] == 1) {
         http_response_code(400);
-        exit('This reservation has already been paid for.');
+        $errorCode = 400;
+        $errorMessage = 'This reservation has already been paid for.';
+        require 'views/errors/error.php';
+        return;
     }
 
     if (empty($_POST['method_id'])) {
         http_response_code(400);
-        exit('Please select a payment method.');
+        $errorCode = 400;
+        $errorMessage = 'Please select a payment method.';
+        require 'views/payments/create.php';
+        return;
     }
 
     $paymentModel = new Payments();
@@ -83,10 +96,10 @@ function submit($reservation_id)
         /* mark reservation as paid */
         $reservationModel->markAsPaid($reservation_id);
         header("Location: " . ROOT . "/reservations/showDetails/" . $reservation_id);
-        exit;
     } else {
         http_response_code(500);
+        $errorCode = 500;
         $message = "Failed to process the payment.";
-        require 'views/payments/create.php';
+        require 'views/errors/error.php';
     }
 }

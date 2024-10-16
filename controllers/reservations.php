@@ -11,8 +11,10 @@ function index()
 {
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to view your reservations.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $model = new Reservations();
@@ -36,8 +38,10 @@ function create($property_id)
     /* Make sure user is logged in */
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'guest') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to make a reservation.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $model = new Reservations();
@@ -46,7 +50,10 @@ function create($property_id)
 
     if (!$property) {
         http_response_code(404);
-        exit("Property not found");
+        $errorCode = 404;
+        $errorMessage = 'Property not found.';
+        require 'views/errors/error.php';
+        return;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -85,12 +92,13 @@ function create($property_id)
 
         if ($reservation_id) {
             http_response_code(200);
-            // No echo or output before this header.
             header("Location: " . ROOT . "/payments/create/{$reservation_id}");
-            exit;
         } else {
             http_response_code(500);
-            $message = "Failed to create the reservation.";
+            $errorCode = 500;
+            $errorMessage = 'Failed to create reservation. Please try again later.';
+            require 'views/errors/error.php';
+            return;
         }
     }
 
@@ -103,8 +111,10 @@ function manage()
 {
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in as a host to manage reservations.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $user_id = $_SESSION['user_id'];
@@ -122,8 +132,10 @@ function confirm($reservation_id)
 {
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in as a host to confirm reservations.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $model = new Reservations();
@@ -133,12 +145,11 @@ function confirm($reservation_id)
         $message = "Reservation confirmed successfully";
         http_response_code(200);
     } else {
-        $message = "Failed to confirm reservation";
         http_response_code(500);
+        $message = "Failed to confirm reservation";
     }
 
     header("Location: /reservations/manage");
-    exit;
 }
 
 /* fucntion to cancel a reservation */
@@ -147,13 +158,14 @@ function cancel($reservation_id)
 {
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in as a host to cancel reservations.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $model = new Reservations();
 
-    // Ensure this actually returns a true/false response from the model
     if ($model->updateReservationStatus($reservation_id, 'canceled')) {
         $message = "Reservation cancelled successfully";
         http_response_code(200);
@@ -163,7 +175,7 @@ function cancel($reservation_id)
     }
 
     header("Location: /reservations/manage");
-    exit;
+    return;
 }
 
 /* functon to view reservation details */
@@ -173,8 +185,10 @@ function showDetails($reservation_id)
 
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to view reservation details.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $model = new Reservations();
@@ -182,7 +196,10 @@ function showDetails($reservation_id)
 
     if (!$reservation || $reservation['user_id'] !== $_SESSION['user_id']) {
         http_response_code(403);
-        exit("You are not authorized to view this reservation.");
+        $errorCode = 403;
+        $errorMessage = 'You are not authorized to view this reservation.';
+        require 'views/errors/error.php';
+        return;
     }
 
     /* check if paid */
@@ -190,4 +207,5 @@ function showDetails($reservation_id)
 
     http_response_code(200);
     require 'views/reservations/showDetails.php';
+    return;
 }

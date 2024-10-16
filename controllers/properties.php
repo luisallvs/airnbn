@@ -58,7 +58,7 @@ function manage()
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
         $errorCode = 401;
-        $errorMessage = 'Unauthorized access.';
+        $errorMessage = 'You have to be logged in as a host to manage properties.';
         require 'views/errors/error.php';
         return;
     }
@@ -84,7 +84,7 @@ function manageSingle($property_id)
     if (!$property || $property['user_id'] !== $_SESSION['user_id']) {
         http_response_code(403);
         $errorCode = 403;
-        $errorMessage = 'Unauthorized access.';
+        $errorMessage = 'You do not have permission to view this property.';
         require 'views/errors/error.php';
         return;
     }
@@ -119,8 +119,10 @@ function create()
     /* Make sure user is logged in and is a host */
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in as a host to create properties.';
+        require 'views/errors/error.php';
+        return;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -160,7 +162,7 @@ function create()
 
         /* Redirect to properties list */
         header('Location: /properties');
-        exit;
+        return;
     }
 
     http_response_code(200);
@@ -175,7 +177,10 @@ function update($property_id)
     /* Check if the property belongs to the logged-in user */
     if (!$property || $property['user_id'] !== $_SESSION['user_id']) {
         http_response_code(403);
-        exit;
+        $errorCode = 403;
+        $errorMessage = 'You do not have permission to update this property.';
+        require 'views/errors/error.php';
+        return;
     }
 
     /* fetch existing images */
@@ -226,10 +231,13 @@ function update($property_id)
 
             http_response_code(200);
             header('Location: /properties/manageSingle/' . $property_id);
-            exit;
+            return;
         } else {
             http_response_code(500);
-            exit;
+            $errorCode = 500;
+            $errorMessage = 'Failed to update property.';
+            require 'views/errors/error.php';
+            return;
         }
     }
 
@@ -243,7 +251,7 @@ function delete($property_id)
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
         $errorCode = 401;
-        $errorMessage = "You are not authorized to perform this action.";
+        $errorMessage = "You have to be logged in as a host to delete properties.";
         require 'views/errors/error.php';
         return;
     }
@@ -271,7 +279,7 @@ function delete($property_id)
     if ($model->delete($property_id, $_SESSION['user_id'])) {
         http_response_code(200);
         header('Location: /properties/manage');
-        exit;
+        return;
     } else {
         http_response_code(500);
         $errorCode = 500;

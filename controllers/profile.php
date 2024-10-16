@@ -8,8 +8,10 @@ function index()
     /* Make sure the user is logged in */
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to view your profile.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $user_id = $_SESSION['user_id'];
@@ -20,6 +22,10 @@ function index()
         http_response_code(200);
     } else {
         http_response_code(404);
+        $errorCode = 404;
+        $errorMessage = 'User not found.';
+        require 'views/errors/error.php';
+        return;
     }
 
     require 'views/profile.php';
@@ -29,8 +35,10 @@ function update()
 {
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to update your profile.';
+        require 'views/errors/error.php';
+        return;
     }
 
     $user_id = $_SESSION['user_id'];
@@ -39,7 +47,10 @@ function update()
 
     if (!$user) {
         http_response_code(404);
-        exit;
+        $errorCode = 404;
+        $errorMessage = 'User not found.';
+        require 'views/errors/error.php';
+        return;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -102,7 +113,10 @@ function update()
                     $user = $model->getById($user_id);
                 } else {
                     http_response_code(500);
-                    $message = "An error occurred while updating your profile.";
+                    $errorCode = 500;
+                    $errorMessage = 'An error occurred while updating the profile.';
+                    require 'views/errors/error.php';
+                    return;
                 }
             }
         } else {

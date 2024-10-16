@@ -25,14 +25,13 @@ function index()
 
                 http_response_code(200);
                 header('Location: /');
-                exit;
             } else {
                 http_response_code(401);
                 $message = "Email or password is incorrect.";
             }
         } else {
             http_response_code(400);
-            $message = "Please fill in all fields.";
+            $message = "Please enter your email and password.";
         }
     }
 

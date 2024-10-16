@@ -45,5 +45,5 @@ if (file_exists($controllerFile)) {
 function loadErrorPage($code, $message)
 {
     include "views/errors/error.php";
-    exit();
+    return;
 }

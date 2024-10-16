@@ -9,8 +9,10 @@ function hostDashboard()
     // Ensure the user is logged in and is a host
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'host') {
         http_response_code(401);
-        header('Location: /login');
-        exit;
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in as a host to access this page.';
+        include 'views/error.php';
+        return;
     }
 
     $user_id = $_SESSION['user_id'];

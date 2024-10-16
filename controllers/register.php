@@ -48,10 +48,13 @@ function index()
 
                     http_response_code(200);
                     header('Location: /');
-                    exit;
+                    return;
                 } else {
                     http_response_code(500);
-                    $message = "Error creating user.";
+                    $errorCode = 500;
+                    $errorMessage = 'An error occurred while creating the user. Please try again later.';
+                    require 'views/errors/error.php';
+                    return;
                 }
             } else {
                 http_response_code(409);
