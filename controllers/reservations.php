@@ -60,10 +60,21 @@ function create($property_id)
         $checkIn = $_POST['check_in'] ?? "";
         $checkOut = $_POST['check_out'] ?? "";
 
+        /* get today's date */
+        $today = date('Y-m-d');
+
         /* validate dates */
         if (empty($checkIn) || empty($checkOut) || strtotime($checkIn) >= strtotime($checkOut)) {
             http_response_code(400);
             $message = "Invalid dates. Please ensure the check-out date is after the check-in date.";
+            require 'views/reservations/create.php';
+            return;
+        }
+
+        /* check if the check in dates is in the past */
+        if (strtotime($checkIn) < strtotime($today)) {
+            http_response_code(400);
+            $message = "You cannot book a reservation in the past. Please select a valid date.";
             require 'views/reservations/create.php';
             return;
         }
