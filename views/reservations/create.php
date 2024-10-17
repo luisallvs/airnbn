@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <title>Make a Reservation</title>
 </head>
 
@@ -27,16 +28,12 @@
                         <form action="<?= ROOT ?>/reservations/create/<?= htmlspecialchars($property['property_id']) ?>" method="POST">
                             <div class="mb-3">
                                 <label for="check_in" class="form-label h4">Check-in Date</label>
-                                <input type="date" class="form-control form-control-sm" name="check_in" id="check_in"
-                                    min="<?= htmlspecialchars($property['availability_start']) ?>"
-                                    max="<?= htmlspecialchars($property['availability_end']) ?>" required>
+                                <input type="text" class="form-control form-control-sm" name="check_in" id="check_in" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="check_out" class="form-label h4">Check-out Date</label>
-                                <input type="date" class="form-control form-control-sm" name="check_out" id="check_out"
-                                    min="<?= htmlspecialchars($property['availability_start']) ?>"
-                                    max="<?= htmlspecialchars($property['availability_end']) ?>" required>
+                                <input type="text" class="form-control form-control-sm" name="check_out" id="check_out" required>
                             </div>
 
                             <div class="d-grid">
@@ -48,10 +45,31 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
+
+    <!-- Pass unavailable dates from PHP to JavaScript -->
+    <script>
+        const unavailableDates = <?= json_encode($unavailableDates) ?>;
+
+        flatpickr("#check_in", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            maxDate: "<?= $property['availability_end'] ?>",
+            disable: unavailableDates,
+            onChange: function(selectedDates, dateStr, instance) {
+                document.getElementById('check_out')._flatpickr.set('minDate', dateStr);
+            }
+        });
+
+        flatpickr("#check_out", {
+            dateFormat: "Y-m-d",
+            minDate: "<?= $property['availability_start'] ?>",
+            maxDate: "<?= $property['availability_end'] ?>",
+            disable: unavailableDates
+        });
+    </script>
 
 </body>
 

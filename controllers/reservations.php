@@ -56,6 +56,23 @@ function create($property_id)
         return;
     }
 
+    /* fetch unavailable dates */
+    $reservationModel = new Reservations();
+    $reservations = $reservationModel->getReservationsByProperty($property_id);
+
+    $unavailableDates = [];
+    foreach ($reservations as $reservation) {
+        $period = new DatePeriod(
+            new DateTime($reservation['check_in']),
+            new DateInterval('P1D'),
+            new DateTime($reservation['check_out'])
+        );
+
+        foreach ($period as $date) {
+            $unavailableDates[] = $date->format('Y-m-d');
+        }
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $checkIn = $_POST['check_in'] ?? "";
         $checkOut = $_POST['check_out'] ?? "";
