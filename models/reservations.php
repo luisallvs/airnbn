@@ -37,24 +37,24 @@ class Reservations extends Base
     {
         $query = $this->db->prepare("
             SELECT 
-            r.reservation_id, 
-            r.user_id, 
-            r.property_id, 
-            p.name AS property_name, 
-            p.address AS property_address, 
-            p.city AS property_city, 
-            r.check_in, 
-            r.check_out, 
-            r.total_price, 
-            r.status, 
-            r.is_paid,
-            r.created_at 
-        FROM 
-            reservations r
-        INNER JOIN 
-            properties p ON r.property_id = p.property_id
-        WHERE 
-            r.reservation_id = ?
+                r.reservation_id, 
+                r.user_id, 
+                r.property_id, 
+                p.name AS property_name, 
+                p.address AS property_address, 
+                p.city AS property_city, 
+                r.check_in, 
+                r.check_out, 
+                r.total_price, 
+                r.status, 
+                r.is_paid,
+                r.created_at 
+            FROM 
+                reservations r
+            INNER JOIN 
+                properties p ON r.property_id = p.property_id
+            WHERE 
+                r.reservation_id = ?
         ");
 
         $query->execute([$reservation_id]);

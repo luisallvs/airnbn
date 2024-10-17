@@ -1,7 +1,8 @@
 <?php
 
-require_once 'models/Properties.php';
+require_once 'models/properties.php';
 require_once 'models/propertyImages.php';
+require_once 'models/reviews.php';
 
 function uploadPropertyImages($files, $property_id, $imageModel, $uploadDir, $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'], $maxFileSize = 5000000)
 {
@@ -108,6 +109,10 @@ function showDetails($property_id)
     /* load property images */
     $imageModel = new PropertyImages();
     $images = $imageModel->getByPropertyId($property_id);
+
+    /* load reviews */
+    $reviewModel = new Reviews();
+    $reviews = $reviewModel->getReviewsByProperty($property_id);
 
     http_response_code(200);
     require 'views/properties/showDetails.php';

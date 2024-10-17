@@ -45,6 +45,11 @@
                         <p class="text-success mt-3">Thank you! Your payment has been completed.</p>
                     <?php endif; ?>
 
+                    <!-- Leave review button only displays if reservation is paid and completed -->
+                    <?php if ($reservation['is_paid'] && strtotime($reservation['check_out']) < time()): ?>
+                        <a href="<?= ROOT ?>/reviews/create/<?= htmlspecialchars($reservation['reservation_id']) ?>" class="btn btn-warning mt-3">Leave a Review</a>
+                    <?php endif; ?>
+
                     <div class="mt-4">
                         <a href="<?= ROOT ?>/reservations" class="btn btn-secondary">Back to Reservations</a>
                     </div>

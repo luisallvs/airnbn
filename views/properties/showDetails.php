@@ -14,7 +14,7 @@
 
     <div class="container mt-5">
         <div class="row">
-            <!-- Property Details -->
+            <!-- Property Details (Left Column) -->
             <div class="col-md-6">
                 <h1 class="mb-4"><?= htmlspecialchars($property['name']) ?></h1>
                 <p><strong>Description:</strong> <?= htmlspecialchars($property['description']) ?></p>
@@ -30,9 +30,25 @@
                 <div class="mt-4">
                     <a href="<?= ROOT ?>/properties" class="btn btn-secondary">Go Back</a>
                 </div>
+
+                <!-- Reviews Section (Below Buttons) -->
+                <h2 class="mt-5">Reviews</h2>
+                <?php if (!empty($reviews)): ?>
+                    <?php foreach ($reviews as $review): ?>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <p class="card-text"><?= htmlspecialchars($review['comment']) ?></p>
+                                <p class="card-text"><strong>Rating:</strong> <?= htmlspecialchars($review['rating']) ?> / 5</p>
+                                <p class="card-text"><em>Reviewed by <?= htmlspecialchars($review['reviewer_name']) ?> on <?= htmlspecialchars($review['created_at']) ?></em></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted">No reviews available for this property.</p>
+                <?php endif; ?>
             </div>
 
-            <!-- Property Images Carousel -->
+            <!-- Property Images Carousel (Right Column) -->
             <div class="col-md-6">
                 <h2>Photos</h2>
                 <?php if (!empty($images)): ?>
