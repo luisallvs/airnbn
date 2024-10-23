@@ -1,6 +1,7 @@
 <?php
 
 require_once 'models/Users.php';
+require_once 'controllers/file_utils.php';
 
 /* Function to display the user profile */
 function index()
@@ -64,10 +65,12 @@ function update()
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
         /* Handle profile picture */
-        $profilePicture = null;
+        $profilePicturePath = null;
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-            $imageData = file_get_contents($_FILES['profile_picture']['tmp_name']);
-            $profilePicture = base64_encode($imageData);
+            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture']);
+            if (!$profilePicturePath) {
+                $message = "Failed to upload profile picture.";
+            }
         }
 
         /* Validate input */
@@ -78,14 +81,14 @@ function update()
                 'phone' => $phone
             ];
 
-            if ($profilePicture) {
-                $updateData['profile_picture'] = $profilePicture;
+            if ($profilePicturePath) {
+                $updateData['profile_picture'] = $profilePicturePath;
             }
 
-            /* Update password */
+            /* Update password if provided and valid */
             if (!empty($newPassword) && !empty($currentPassword) && $newPassword === $confirmPassword) {
                 if (password_verify($currentPassword, $user['password'])) {
-                    $updateData['password'] = $newPassword;
+                    $updateData['password'] = password_hash($newPassword, PASSWORD_DEFAULT);  // Hash the new password
                 } else {
                     http_response_code(403);
                     $message = "Your current password is incorrect.";

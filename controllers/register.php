@@ -1,5 +1,8 @@
 <?php
 
+require_once 'models/Users.php';
+require_once 'controllers/file_utils.php';
+
 function index()
 {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -16,8 +19,10 @@ function index()
 
         /* Handle profile picture */
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-            $imageData = file_get_contents($_FILES['profile_picture']['tmp_name']);
-            $data['profile_picture'] = base64_encode($imageData);
+            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture']);
+            $data['profile_picture'] = $profilePicturePath;
+        } else {
+            $data['profile_picture'] = null;
         }
 
         /* Validate user input */
@@ -28,8 +33,10 @@ function index()
             strlen($data['password']) >= 8
         ) {
 
+            /* Hash password */
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+
             /* Load User model */
-            require_once 'models/Users.php';
             $model = new Users();
 
             /* Check if email is already registered */
@@ -39,7 +46,7 @@ function index()
 
                 /* Set session and redirect to home page */
                 if ($createdUserId) {
-                    $_SESSION['user_id'] = $createdUserId;
+                    $_SESSION['user_id'] = (int) $createdUserId;
                     $_SESSION['user_name'] = $data['name'];
                     $_SESSION['user_role'] = $data['role'];
 

@@ -33,6 +33,36 @@ class Reservations extends Base
         return $this->db->lastInsertId();
     }
 
+    public function getAll()
+    {
+        $query = $this->db->prepare("
+        SELECT 
+            r.reservation_id, 
+            r.user_id, 
+            u.name AS user_name,
+            r.property_id, 
+            p.name AS property_name, 
+            r.check_in, 
+            r.check_out, 
+            r.total_price, 
+            r.status, 
+            r.is_paid,
+            r.created_at 
+        FROM 
+            reservations r
+        INNER JOIN 
+            properties p ON r.property_id = p.property_id
+        INNER JOIN 
+            users u ON r.user_id = u.user_id 
+        ORDER BY 
+            r.created_at DESC
+    ");
+
+        $query->execute();
+        return $query->fetchAll();
+    }
+
+
     public function getReservationById($reservation_id)
     {
         $query = $this->db->prepare("
@@ -88,6 +118,44 @@ class Reservations extends Base
         return $query->fetchAll();
     }
 
+    public function getRecentReservations()
+    {
+        $query = $this->db->prepare("
+            SELECT 
+                r.reservation_id, 
+                u.name AS user_name, 
+                p.name AS property_name, 
+                r.check_in, 
+                r.check_out, 
+                r.status
+            FROM 
+                reservations r
+            JOIN 
+                users u ON r.user_id = u.user_id
+            JOIN 
+                properties p ON r.property_id = p.property_id
+            ORDER BY 
+                r.created_at DESC
+            LIMIT 
+                5
+        ");
+
+        $query->execute();
+        return $query->fetchAll();
+    }
+
+    public function countReservations()
+    {
+        $query = $this->db->query("
+        SELECT COUNT(*) 
+        FROM 
+            reservations");
+
+        $query->execute();
+        return $query->fetchColumn();
+    }
+
+
     public function getReservationsByHost($host_user_id)
     {
         $query = $this->db->prepare("
@@ -142,6 +210,26 @@ class Reservations extends Base
         return $query->fetchAll();
     }
 
+    public function updateReservation($reservation_id, $data)
+    {
+        $query = $this->db->prepare("
+            UPDATE reservations 
+            SET 
+                check_in = ?, 
+                check_out = ?, 
+                status = ?
+            WHERE 
+                reservation_id = ?
+        ");
+
+        return $query->execute([
+            $data['check_in'],
+            $data['check_out'],
+            $data['status'],
+            $reservation_id
+        ]);
+    }
+
     public function updateReservationStatus($reservation_id, $status)
     {
         $query = $this->db->prepare("
@@ -155,6 +243,20 @@ class Reservations extends Base
 
         return $query->execute([$status, $reservation_id]);
     }
+
+    public function updateIsPaid($reservationId, $isPaid)
+    {
+        $query = $this->db->prepare("
+        UPDATE 
+            reservations 
+        SET 
+            is_paid = ? 
+        WHERE 
+            reservation_id = ?
+    ");
+        return $query->execute([$isPaid, $reservationId]);
+    }
+
 
     public function isAvailable($property_id, $check_in, $check_out)
     {
@@ -264,6 +366,18 @@ class Reservations extends Base
         WHERE 
             reservation_id = ?
     ");
+        return $query->execute([$reservation_id]);
+    }
+
+    public function delete($reservation_id)
+    {
+        $query = $this->db->prepare("
+            DELETE FROM 
+                reservations 
+            WHERE 
+                reservation_id = ?
+        ");
+
         return $query->execute([$reservation_id]);
     }
 }

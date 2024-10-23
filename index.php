@@ -17,8 +17,15 @@ $controller = !empty($url_parts[0]) ? $url_parts[0] : "home";
 $method = !empty($url_parts[1]) ? $url_parts[1] : "index";
 $param = !empty($url_parts[2]) ? $url_parts[2] : null;
 
-/* Define the controller file pat */
-$controllerFile = "controllers/" . $controller . ".php";
+if ($controller === 'admin') {
+    $controller = !empty($url_parts[1]) ? $url_parts[1] : 'dashboard';
+    $method = !empty($url_parts[2]) ? $url_parts[2] : 'index';
+    $param = !empty($url_parts[3]) ? $url_parts[3] : null;
+
+    $controllerFile = "controllers/admin/$controller.php";
+} else {
+    $controllerFile = "controllers/$controller.php";
+}
 
 /* Check if the controller file exists */
 if (file_exists($controllerFile)) {
@@ -26,7 +33,7 @@ if (file_exists($controllerFile)) {
 
     /* Check if the method exists as a function */
     if (function_exists($method)) {
-        echo "Calling method $method in $controllerFile"; //!!!!debug!!!!!
+        /* echo "Calling method $method in $controllerFile"; */
         if ($param) {
             call_user_func($method, $param);
         } else {
@@ -41,8 +48,8 @@ if (file_exists($controllerFile)) {
     loadErrorPage(404, "Controller file not found: " . htmlspecialchars($controllerFile));
 }
 
-/* fucntion to load error page */
-function loadErrorPage($code, $message)
+/* Function to load error page */
+function loadErrorPage($erroCode, $errorMessage)
 {
     include "views/errors/error.php";
     return;

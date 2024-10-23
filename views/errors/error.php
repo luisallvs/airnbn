@@ -16,19 +16,9 @@
         <h1 class="display-1 text-danger"><?= htmlspecialchars($errorCode) ?></h1>
         <h2 class="mb-4"><?= htmlspecialchars($errorMessage) ?></h2>
 
-        <p class="lead">
-            <?php if ($errorCode == 404): ?>
-                Oops! The page you're looking for doesn't exist.
-            <?php elseif ($errorCode == 403): ?>
-                Sorry, you don't have permission to access this page.
-            <?php elseif ($errorCode == 500): ?>
-                Something went wrong on our end. Please try again later.
-            <?php else: ?>
-                An unexpected error occurred.
-            <?php endif; ?>
-        </p>
-
-        <a href="<?= ROOT ?>/" class="btn btn-primary">Go Home</a>
+        <a href="<?= isset($_SESSION['admin']) ? ROOT . '/admin/dashboard' : ROOT ?>" class="btn btn-primary">
+            <?= isset($_SESSION['admin']) ? 'Back to Dashboard' : 'Go Home' ?>
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

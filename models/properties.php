@@ -45,24 +45,63 @@ class Properties extends Base
     {
         $query = $this->db->prepare("
         SELECT 
-            property_id, 
-            name, 
-            description, 
-            city, 
-            country,
-            price_per_night, 
-            max_guests, 
-            availability_start, 
-            availability_end
+            p.property_id, 
+            p.name, 
+            p.description, 
+            p.city, 
+            p.country,
+            p.price_per_night, 
+            p.max_guests, 
+            p.availability_start, 
+            p.availability_end,
+            u.name AS owner_name,
+            p.created_at
         FROM 
-            properties 
+            properties p
+        JOIN 
+            users u ON p.user_id = u.user_id
         WHERE 
-            availability_end >= CURDATE()
+            p.availability_end >= CURDATE()
     ");
 
         $query->execute();
         return $query->fetchAll();
     }
+
+
+    public function countProperties()
+    {
+        $query = $this->db->prepare("
+        SELECT COUNT(*)  
+        FROM 
+            properties
+    ");
+
+        $query->execute();
+        return $query->fetchColumn();
+    }
+
+    public function getLastFiveProperties()
+    {
+        $query = $this->db->prepare("
+            SELECT 
+                property_id, 
+                name, 
+                user_id, 
+                price_per_night, 
+                created_at
+            FROM 
+                properties
+            ORDER BY 
+                created_at DESC
+            LIMIT 
+                5
+        ");
+
+        $query->execute();
+        return $query->fetchAll();
+    }
+
 
     public function getAllWithImages()
     {
@@ -158,20 +197,21 @@ class Properties extends Base
     public function update($data)
     {
         $query = $this->db->prepare("
-            UPDATE properties 
-            SET 
-                name = ?,
-                description = ?, 
-                address = ?, 
-                city = ?, 
-                country = ?, 
-                price_per_night = ?, 
-                max_guests = ?, 
-                availability_start = ?, 
-                availability_end = ?
-            WHERE 
-                property_id = ? AND user_id = ?
-        ");
+        UPDATE 
+            properties 
+        SET 
+            name = ?,
+            description = ?, 
+            address = ?, 
+            city = ?, 
+            country = ?, 
+            price_per_night = ?, 
+            max_guests = ?, 
+            availability_start = ?, 
+            availability_end = ?
+        WHERE 
+            property_id = ?
+    ");
 
         return $query->execute([
             $data['name'],
@@ -183,8 +223,7 @@ class Properties extends Base
             $data['max_guests'],
             $data['availability_start'],
             $data['availability_end'],
-            $data['property_id'],
-            $data['user_id']
+            $data['property_id']
         ]);
     }
 
@@ -207,17 +246,15 @@ class Properties extends Base
     }
 
     /* Delete a property */
-    public function delete($property_id, $user_id)
+    public function delete($property_id)
     {
         $query = $this->db->prepare("
             DELETE FROM 
                 properties 
             WHERE 
                 property_id = ? 
-            AND 
-                user_id = ?
         ");
 
-        return $query->execute([$property_id, $user_id]);
+        return $query->execute([$property_id]);
     }
 }

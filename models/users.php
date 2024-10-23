@@ -14,7 +14,7 @@ class Users extends Base
             email, 
             role, 
             phone,
-            profile_picture
+            created_at
         FROM 
             users");
 
@@ -22,6 +22,39 @@ class Users extends Base
 
         return $query->fetchAll();
     }
+
+    public function countUsers()
+    {
+        $query = $this->db->prepare("
+        SELECT COUNT(*) 
+        FROM 
+            users");
+
+        $query->execute();
+        return $query->fetchColumn();
+    }
+
+    public function getLastFiveUsers()
+    {
+        $query = $this->db->prepare("
+            SELECT 
+                user_id, 
+                name, 
+                email, 
+                role, 
+                created_at
+            FROM 
+                users
+            ORDER BY 
+                created_at DESC
+            LIMIT 
+                5
+        ");
+
+        $query->execute();
+        return $query->fetchAll();
+    }
+
 
     public function getById($user_id)
     {
@@ -69,34 +102,6 @@ class Users extends Base
 
     public function create($data)
     {
-        // Hash the password
-        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-
-        /* handle profile picure */
-        $profilePicturePath = null;
-        if (!empty($data['profile_picture'])) {
-            /* decode base64 */
-            $decodedImage = base64_decode($data['profile_picture']);
-
-            /* create a unique file name */
-            $fileName = bin2hex(random_bytes(16)) . '.jpg';
-
-            /* define path where image will be stored */
-            $imageDirectory = __DIR__ . '/../images';
-
-            if (!is_dir($imageDirectory)) {
-                mkdir($imageDirectory, 0777, true);
-            }
-
-            $filePath = $imageDirectory . '/' . $fileName;
-
-            /* save image */
-            file_put_contents($filePath, $decodedImage);
-
-            /* store the relative path */
-            $profilePicturePath = "/images/" . $fileName;
-        }
-
         $query = $this->db->prepare("
             INSERT INTO users 
                 (name, 
@@ -107,19 +112,18 @@ class Users extends Base
                 profile_picture,
                 created_at) 
             VALUES 
-                (?, ?, ?, ?, ?, ?, Default)
+                (?, ?, ?, ?, ?, ?, NOW())
         ");
 
         $query->execute([
             $data['name'],
             $data['email'],
-            $hashedPassword,
+            $data['password'],
             $data['role'],
             $data['phone'],
-            $profilePicturePath
+            $data['profile_picture']
         ]);
 
-        // Return the last inserted ID
         return $this->db->lastInsertId();
     }
 
@@ -143,34 +147,22 @@ class Users extends Base
             $data['phone']
         ];
 
-        /* check if password is provide */
-        if (!empty($data['password'])) {
-            $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+        /* add password if exists */
+        if (isset($data['password'])) {
             $query .= ", password = ?";
-            $params[] = $hashedPassword;
+            $params[] = $data['password'];
         }
 
-        /* check if profile picture is provided */
-        if (!empty($data["profile_picture"])) {
-            /* decode base64 */
-            $decodedImage = base64_decode($data['profile_picture']);
-            $fileName = bin2hex(random_bytes(16)) . '.jpg';
-            $imageDirectory = __DIR__ . '/../images';
-
-            if (!is_dir($imageDirectory)) {
-                mkdir($imageDirectory, 0777, true);
-            }
-
-            $filePath = $imageDirectory . '/' . $fileName;
-
-            /* save image */
-            file_put_contents($filePath, $decodedImage);
-
-            /* store the relative path */
-            $profilePicturePath = "/images/" . $fileName;
-
+        /* add profile picture if exists */
+        if (isset($data['profile_picture'])) {
             $query .= ", profile_picture = ?";
-            $params[] = $profilePicturePath;
+            $params[] = $data['profile_picture'];
+        }
+
+        /* add role if exists */
+        if (isset($data['role'])) {
+            $query .= ", role = ?";
+            $params[] = $data['role'];
         }
 
         /* where clause */
@@ -183,5 +175,16 @@ class Users extends Base
         /* prepare and execute query */
         $stmt = $this->db->prepare($query);
         return $stmt->execute($params);
+    }
+
+    public function delete($user_id)
+    {
+        $query = $this->db->prepare("
+        DELETE FROM 
+            users 
+        WHERE 
+            user_id = ?");
+
+        return $query->execute([$user_id]);
     }
 }
