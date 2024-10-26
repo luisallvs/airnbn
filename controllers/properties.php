@@ -127,7 +127,7 @@ function create()
         }
 
         /* Redirect to properties list */
-        header('Location: /properties');
+        header('Location: /properties/manage');
         return;
     }
 

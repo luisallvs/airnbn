@@ -13,25 +13,23 @@
     <?php include __DIR__ . '/../templates/navbar.php'; ?>
 
     <div class="container mt-4">
-        <h1 class="mb-4">Manage Reservations</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Manage Reservations</h1>
+        </div>
 
-        <!-- Display messages if any -->
-        <?php if (!empty($message)): ?>
-            <div class="alert alert-info">
-                <?= htmlspecialchars($message) ?>
+        <!-- Display flash message if any -->
+        <?php if (!empty($_SESSION['flash_message'])): ?>
+            <div class="alert alert-info text-center">
+                <?= htmlspecialchars($_SESSION['flash_message']) ?>
             </div>
-        <?php endif; ?>
-
-        <?php if (!empty($_GET['message'])): ?>
-            <div class="alert alert-info">
-                <?= htmlspecialchars($_GET['message']) ?>
-            </div>
+            <?php unset($_SESSION['flash_message']); // Clear the message 
+            ?>
         <?php endif; ?>
 
         <?php if (!empty($reservations)): ?>
             <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-dark">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark text-center">
                         <tr>
                             <th>Property</th>
                             <th>Check-in</th>
@@ -44,13 +42,12 @@
                     </thead>
                     <tbody>
                         <?php foreach ($reservations as $reservation): ?>
-                            <tr>
+                            <tr class="text-center align-middle">
                                 <td><?= htmlspecialchars($reservation['property_name']) ?></td>
                                 <td><?= htmlspecialchars($reservation['check_in']) ?></td>
                                 <td><?= htmlspecialchars($reservation['check_out']) ?></td>
-                                <td><?= htmlspecialchars($reservation['total_price']) ?> €</td>
+                                <td>€<?= htmlspecialchars(number_format($reservation['total_price'], 2)) ?></td>
                                 <td>
-                                    <!-- Display status correctly -->
                                     <?php if ($reservation['status'] === 'confirmed'): ?>
                                         <span class="badge bg-success">Confirmed</span>
                                     <?php elseif ($reservation['status'] === 'canceled'): ?>
@@ -65,15 +62,24 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <?php if ($reservation['status'] === 'pending'): ?>
+                                    <?php if ($reservation['status'] === 'confirmed'): ?>
+                                        <!-- Allow canceling a confirmed reservation -->
+                                        <form action="<?= ROOT ?>/reservations/cancel/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-warning">Cancel</button>
+                                        </form>
+                                    <?php elseif ($reservation['status'] === 'canceled'): ?>
+                                        <!-- Allow confirming a canceled reservation -->
+                                        <form action="<?= ROOT ?>/reservations/confirm/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-primary">Confirm</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <!-- Confirm and Cancel options for pending reservations -->
                                         <form action="<?= ROOT ?>/reservations/confirm/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-success">Confirm</button>
                                         </form>
                                         <form action="<?= ROOT ?>/reservations/cancel/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
                                         </form>
-                                    <?php else: ?>
-                                        <span class="text-muted"><?= ucfirst(htmlspecialchars($reservation['status'])) ?></span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -82,7 +88,9 @@
                 </table>
             </div>
         <?php else: ?>
-            <p class="text-muted">No reservations available for your properties.</p>
+            <div class="text-center">
+                <p class="text-muted">No reservations available for your properties.</p>
+            </div>
         <?php endif; ?>
     </div>
 </body>

@@ -16,9 +16,8 @@
         <h1 class="display-1 text-danger"><?= htmlspecialchars($errorCode) ?></h1>
         <h2 class="mb-4"><?= htmlspecialchars($errorMessage) ?></h2>
 
-        <a href="<?= isset($_SESSION['admin']) ? ROOT . '/admin/dashboard' : ROOT ?>" class="btn btn-primary">
-            <?= isset($_SESSION['admin']) ? 'Back to Dashboard' : 'Go Home' ?>
-        </a>
+        <!-- Conditionally display back button -->
+        <a href="<? ROOT ?>" class="btn btn-primary">Go Home</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

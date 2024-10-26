@@ -15,33 +15,38 @@
 
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h1 class="mb-4 text-center">Make a Reservation for <?= htmlspecialchars($property['name']) ?></h1>
-
-                <?php if (isset($message) && !empty($message)): ?>
-                    <div class="alert alert-warning">
-                        <?= htmlspecialchars($message) ?>
+            <div class="col-md-8 col-lg-6">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-dark text-white text-center">
+                        <h2>Reserve Your Stay at <?= htmlspecialchars($property['name']) ?></h2>
                     </div>
-                <?php endif; ?>
-                <div class="d-flex justify-content-center align-items-center mt-5">
-                    <div class="col-md-4 text-center">
+                    <div class="card-body">
+                        <?php if (isset($message) && !empty($message)): ?>
+                            <div class="alert alert-warning text-center">
+                                <?= htmlspecialchars($message) ?>
+                            </div>
+                        <?php endif; ?>
+
                         <form action="<?= ROOT ?>/reservations/create/<?= htmlspecialchars($property['property_id']) ?>" method="POST">
-                            <div class="mb-3">
-                                <label for="check_in" class="form-label h4">Check-in Date</label>
-                                <input type="text" class="form-control form-control-sm" name="check_in" id="check_in" required>
+                            <!-- Check-in Date -->
+                            <div class="mb-4">
+                                <label for="check_in" class="form-label fw-bold">Check-in Date</label>
+                                <input type="text" class="form-control" name="check_in" id="check_in" placeholder="Select check-in date" required>
+                            </div>
+                            <!-- Check-out Date -->
+                            <div class="mb-4">
+                                <label for="check_out" class="form-label fw-bold">Check-out Date</label>
+                                <input type="text" class="form-control" name="check_out" id="check_out" placeholder="Select check-out date" required>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="check_out" class="form-label h4">Check-out Date</label>
-                                <input type="text" class="form-control form-control-sm" name="check_out" id="check_out" required>
-                            </div>
-
+                            <!-- Submit Button -->
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-sm">Book Now</button>
+                                <button type="submit" class="btn btn-primary btn-lg">Book Now</button>
                             </div>
                         </form>
-                        <div class="mt-3 d-grid">
-                            <a href="<?= ROOT ?>/properties/showDetails/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-secondary btn-sm">Go Back</a>
+
+                        <div class="text-center mt-3">
+                            <a href="/properties/showDetails/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-link">Go Back to Property Details</a>
                         </div>
                     </div>
                 </div>
@@ -70,7 +75,6 @@
             disable: unavailableDates
         });
     </script>
-
 </body>
 
 </html>

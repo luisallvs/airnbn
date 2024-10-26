@@ -23,7 +23,7 @@ function index()
                 $_SESSION['admin_email'] = $user['email'];
                 $_SESSION['user_role'] = $user['role'];
 
-                header('Location: ' . ROOT . '/admin/dashboard');
+                header('Location: /');
                 exit();
             } else {
                 $message = "Invalid email or password, or you do not have admin privileges.";

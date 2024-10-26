@@ -10,32 +10,50 @@
 </head>
 
 <body>
+    <!-- Navbar -->
     <?php include 'templates/navbar.php'; ?>
 
     <div class="container mt-5">
-        <h1 class="text-center">Login</h1>
-        <p class="text-center">Don't have an account yet? <a href="<?= ROOT ?>/register/" class="text-decoration-none">Register here</a></p>
-        <p class="text-center">Are you an Admin? <a href="<?= ROOT ?>/admin/login/" class="text-decoration-none">Login here</a></p>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-dark text-white text-center">
+                        <h2 class="mb-0">Login</h2>
+                    </div>
+                    <div class="card-body p-4">
 
-        <?php if (isset($message)): ?>
-            <div class="alert alert-warning text-center"><?= htmlspecialchars($message) ?></div>
-        <?php endif; ?>
+                        <!-- Login admin and register -->
+                        <p class="text-center">Don't have an account? <a href="<?= ROOT ?>/register/" class="text-decoration-none fw-bold">Register here</a></p>
+                        <p class="text-center">Admin? <a href="<?= ROOT ?>/admin/login/" class="text-decoration-none fw-bold">Login here</a></p>
 
-        <form action="/login" method="POST" class="mx-auto" style="max-width: 400px;">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" name="email" class="form-control" required>
+                        <!-- Alert message -->
+                        <?php if (isset($message)): ?>
+                            <div class="alert alert-warning text-center"><?= htmlspecialchars($message) ?></div>
+                        <?php endif; ?>
+
+                        <!-- Login form -->
+                        <form action="/login" method="POST" class="mx-auto">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" name="email" class="form-control" required placeholder="Enter your email">
+                            </div>
+
+                            <div class="mb-5">
+                                <label for="password" class="form-label">Password:</label>
+                                <input type="password" name="password" class="form-control" required placeholder="Enter your password">
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark btn-lg">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <p class="text-muted">Secure Login | © 2024 Airnbn</p>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password:</label>
-                <input type="password" name="password" class="form-control" required>
-            </div>
-
-            <div class="d-grid">
-                <button type="submit" class="btn btn-dark">Login</button>
-            </div>
-        </form>
+        </div>
     </div>
 </body>
 

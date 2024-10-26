@@ -168,19 +168,15 @@ function confirm($reservation_id)
 
     $model = new Reservations();
 
-    // Ensure this actually returns a true/false response from the model
     if ($model->updateReservationStatus($reservation_id, 'confirmed')) {
-        $message = "Reservation confirmed successfully";
-        http_response_code(200);
+        $_SESSION['flash_message'] = "Reservation status updated to Confirmed successfully";
     } else {
-        http_response_code(500);
-        $message = "Failed to confirm reservation";
+        $_SESSION['flash_message'] = "Failed to confirm reservation";
     }
 
     header("Location: /reservations/manage");
+    exit();
 }
-
-/* fucntion to cancel a reservation */
 
 function cancel($reservation_id)
 {
@@ -195,16 +191,15 @@ function cancel($reservation_id)
     $model = new Reservations();
 
     if ($model->updateReservationStatus($reservation_id, 'canceled')) {
-        $message = "Reservation cancelled successfully";
-        http_response_code(200);
+        $_SESSION['flash_message'] = "Reservation status updated to Canceled successfully";
     } else {
-        $message = "Failed to cancel reservation";
-        http_response_code(500);
+        $_SESSION['flash_message'] = "Failed to cancel reservation";
     }
 
     header("Location: /reservations/manage");
-    return;
+    exit();
 }
+
 
 /* functon to view reservation details */
 
