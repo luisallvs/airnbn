@@ -14,10 +14,10 @@
 
     <div class="container mt-5 text-center">
         <h1 class="display-1 text-danger"><?= htmlspecialchars($errorCode) ?></h1>
-        <h2 class="mb-4"><?= htmlspecialchars($errorMessage) ?></h2>
+        <h2 class="mb-4"><?= htmlspecialchars_decode($errorMessage) ?></h2>
 
-        <!-- Conditionally display back button -->
-        <a href="<? ROOT ?>" class="btn btn-primary">Go Home</a>
+        <!-- Updated Go Home button with corrected ROOT syntax -->
+        <a href="/" class="btn btn-primary">Go Home</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

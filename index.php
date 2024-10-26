@@ -33,24 +33,38 @@ if (file_exists($controllerFile)) {
 
     /* Check if the method exists as a function */
     if (function_exists($method)) {
-        /* echo "Calling method $method in $controllerFile"; */
-        if ($param) {
+        $reflection = new ReflectionFunction($method);
+        $paramCount = $reflection->getNumberOfParameters();
+
+        /* Check if a required parameter is missing */
+        if ($paramCount === 1 && is_null($param)) {
+            http_response_code(404);
+            loadErrorPage(404, "It seems this page is missing some information. Please check the URL or return to the home page.");
+        } elseif ($param) {
             call_user_func($method, $param);
         } else {
             call_user_func($method);
         }
     } else {
         http_response_code(404);
-        loadErrorPage(404, "Method not found: " . htmlspecialchars($method));
+        loadErrorPage(404, "Sorry, we couldn't find the page you're looking for. Please return to the home page.");
     }
 } else {
     http_response_code(404);
-    loadErrorPage(404, "Controller file not found: " . htmlspecialchars($controllerFile));
+    loadErrorPage(404, "Oops! The page you're looking for doesn't exist. Please go back to the home page.");
+}
+
+if ($controller === "user" && $method === "delete") {
+    delete();
+    exit();
 }
 
 /* Function to load error page */
-function loadErrorPage($erroCode, $errorMessage)
+function loadErrorPage($errorCode = 404, $errorMessage = "Page not found")
 {
+    http_response_code($errorCode);
+    $errorCode = htmlspecialchars($errorCode);
+    $errorMessage = htmlspecialchars($errorMessage);
     include "views/errors/error.php";
-    return;
+    exit();
 }

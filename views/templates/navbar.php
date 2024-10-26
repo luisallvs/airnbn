@@ -7,7 +7,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <!-- Profile link for logged-in users -->
                     <li class="nav-item">
@@ -23,12 +23,8 @@
                                 <i class="bi bi-building"></i> Properties
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="propertiesDropdown">
-                                <li><a class="dropdown-item" href="<?= ROOT ?>/properties/create">
-                                        <i class="bi bi-plus-circle"></i> Create Property
-                                    </a></li>
-                                <li><a class="dropdown-item" href="<?= ROOT ?>/properties/manage">
-                                        <i class="bi bi-list-check"></i> Manage Properties
-                                    </a></li>
+                                <li><a class="dropdown-item" href="<?= ROOT ?>/properties/create"><i class="bi bi-plus-circle"></i> Create Property</a></li>
+                                <li><a class="dropdown-item" href="<?= ROOT ?>/properties/manage"><i class="bi bi-list-check"></i> Manage Properties</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -57,12 +53,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <span class="navbar-text ms-2">
+                        <span class="navbar-text ms-2 d-flex align-items-center">
                             Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?>!
-                            <span class="badge bg-info text-dark"><?= htmlspecialchars($_SESSION['user_role']) ?></span>
+                            <span class="badge bg-info text-dark ms-2"><?= htmlspecialchars($_SESSION['user_role']) ?></span>
                         </span>
                     </li>
-
                 <?php else: ?>
                     <!-- Links for non-logged-in users -->
                     <li class="nav-item">
@@ -86,5 +81,5 @@
     </div>
 </nav>
 
-<!-- icons -->
+<!-- Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">

@@ -39,7 +39,7 @@ function create($property_id)
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'guest') {
         http_response_code(401);
         $errorCode = 401;
-        $errorMessage = 'You have to be logged in to make a reservation.';
+        $errorMessage = 'You have to be logged in as a guest to make a reservation.';
         require 'views/errors/error.php';
         return;
     }
