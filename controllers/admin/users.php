@@ -106,7 +106,7 @@ function edit($user_id)
         }
 
         if (!empty($_POST['password'])) {
-            $updatedData['password'] = $_POST['password'];
+            $updatedData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
         }
 
         if ($userModel->update($user_id, $updatedData)) {
