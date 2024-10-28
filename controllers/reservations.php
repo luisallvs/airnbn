@@ -22,10 +22,6 @@ function index()
     $user_id = $_SESSION['user_id'];
     $reservations = $model->getReservationsByUser($user_id);
 
-    foreach ($reservations as &$reservation) {
-        $reservation["payment_status"] = $reservation["is_paid"] ? "Paid" : "Not Paid";
-    }
-
     http_response_code(200);
     require 'views/reservations/index.php';
 }

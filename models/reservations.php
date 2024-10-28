@@ -103,6 +103,7 @@ class Reservations extends Base
                 r.total_price, 
                 r.status, 
                 r.is_paid,
+                CASE WHEN r.is_paid = 1 THEN 'Paid' ELSE 'Not Paid' END AS payment_status,
                 r.created_at 
             FROM 
                 reservations r

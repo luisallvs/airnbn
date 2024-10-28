@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Reviews Section -->
-                <div class="card shadow-sm mt-4">
+                <div class="card shadow-sm mt-4 mb-4">
                     <div class="card-header bg-secondary text-white text-center">
                         <h3 class="mb-0">Reviews</h3>
                     </div>

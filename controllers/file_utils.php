@@ -1,6 +1,6 @@
 <?php
 
-function uploadPropertyImages($files, $property_id, $imageModel, $uploadDir, $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'], $maxFileSize = 5000000)
+function uploadPropertyImages($files, $property_id, $imageModel, $uploadDir, $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'], $maxFileSize = 5000000)
 {
     /* Create upload directory if it doesn't exist */
     if (!is_dir($uploadDir)) {

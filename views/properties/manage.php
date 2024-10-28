@@ -16,7 +16,7 @@
         <h1 class="text-center mb-4">My Properties</h1>
 
         <?php if (!empty($properties)): ?>
-            <div class="row g-4">
+            <div class="row g-4 mb-4">
                 <?php foreach ($properties as $property): ?>
                     <div class="col-md-4">
                         <div class="card h-100 shadow-sm border-0">

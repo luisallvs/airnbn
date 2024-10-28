@@ -12,7 +12,7 @@
 <body>
     <?php include __DIR__ . '/../templates/navbar.php'; ?>
 
-    <div class="container mt-5">
+    <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg">

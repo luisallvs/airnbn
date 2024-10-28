@@ -28,7 +28,7 @@
 
             <!-- back to dashboard button -->
             <div class="d-flex justify-content-start mb-2">
-                <a href="<?= ROOT ?>/admin/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+                <a href="/" class="btn btn-secondary">Back to Dashboard</a>
             </div>
         </div>
 
