@@ -15,12 +15,14 @@ $url_parts = explode("/", $request_uri);
 /* Set default controller and method */
 $controller = !empty($url_parts[0]) ? $url_parts[0] : "home";
 $method = !empty($url_parts[1]) ? $url_parts[1] : "index";
-$param = !empty($url_parts[2]) ? $url_parts[2] : null;
+$param1 = !empty($url_parts[2]) ? $url_parts[2] : null;
+$param2 = !empty($url_parts[3]) ? $url_parts[3] : null;
 
 if ($controller === 'admin') {
     $controller = !empty($url_parts[1]) ? $url_parts[1] : 'dashboard';
     $method = !empty($url_parts[2]) ? $url_parts[2] : 'index';
-    $param = !empty($url_parts[3]) ? $url_parts[3] : null;
+    $param1 = !empty($url_parts[3]) ? $url_parts[3] : null;
+    $param2 = !empty($url_parts[4]) ? $url_parts[4] : null;
 
     $controllerFile = "controllers/admin/$controller.php";
 } else {
@@ -36,12 +38,14 @@ if (file_exists($controllerFile)) {
         $reflection = new ReflectionFunction($method);
         $paramCount = $reflection->getNumberOfParameters();
 
-        /* Check if a required parameter is missing */
-        if ($paramCount === 1 && is_null($param)) {
+        /* handle the parameters */
+        if ($paramCount === 2 && (is_null($param1) || is_null($param2))) {
             http_response_code(404);
             loadErrorPage(404, "It seems this page is missing some information. Please check the URL or return to the home page.");
-        } elseif ($param) {
-            call_user_func($method, $param);
+        } elseif ($paramCount === 2) {
+            call_user_func($method, $param1, $param2);
+        } elseif ($paramCount === 1 && !is_null($param1)) {
+            call_user_func($method, $param1);
         } else {
             call_user_func($method);
         }
@@ -52,11 +56,6 @@ if (file_exists($controllerFile)) {
 } else {
     http_response_code(404);
     loadErrorPage(404, "Oops! The page you're looking for doesn't exist. Please go back to the home page.");
-}
-
-if ($controller === "user" && $method === "delete") {
-    delete();
-    exit();
 }
 
 /* Function to load error page */

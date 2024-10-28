@@ -31,6 +31,7 @@
 
                         <div class="d-grid gap-2 mt-4">
                             <a href="<?= ROOT ?>/reservations/create/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-success btn-lg">Book Now</a>
+                            <a href="<?= ROOT ?>/messages/conversation/<?= htmlspecialchars($property['user_id']) ?>/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-outline-primary btn-lg">Message Host</a>
                         </div>
                     </div>
                 </div>

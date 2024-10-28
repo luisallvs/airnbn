@@ -111,7 +111,7 @@ function update()
                     $_SESSION['user_profile_picture'] = $updatedUser['profile_picture'];
 
                     http_response_code(200);
-                    $message = "Profile updated successfully.";
+                    header('Location: ' . ROOT . '/profile');
 
                     $user = $model->getById($user_id);
                 } else {

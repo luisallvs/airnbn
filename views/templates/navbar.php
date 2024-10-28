@@ -1,7 +1,15 @@
+<?php
+if (isset($_SESSION['user_id'])) {
+    require_once __DIR__ . '/../../models/messages.php';
+    $messagesModel = new Messages();
+    $messages_count = $messagesModel->getUnreadMessagesCount($_SESSION['user_id']);
+}
+?>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="<?= ROOT ?>/">
-            <i class="bi bi-house-door-fill"></i> Airbnb
+            <i class="bi bi-house-door-fill"></i> Airnbn
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -13,6 +21,16 @@
                     <li class="nav-item">
                         <a class="nav-link <?= $_SERVER['REQUEST_URI'] === '/profile' ? 'active' : '' ?>" href="<?= ROOT ?>/profile">
                             <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    </li>
+
+                    <!-- Inbox link for logged-in users -->
+                    <li class="nav-item">
+                        <a class="nav-link <?= $_SERVER['REQUEST_URI'] === '/messages' ? 'active' : '' ?>" href="<?= ROOT ?>/messages">
+                            <i class="bi bi-envelope"></i> Inbox
+                            <?php if (!empty($messages_count) && $messages_count > 0): ?>
+                                <span class="badge bg-danger text-white ms-1"> <?= $messages_count ?> </span>
+                            <?php endif; ?>
                         </a>
                     </li>
 

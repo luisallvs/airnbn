@@ -39,7 +39,7 @@
                             <img src="<?= ROOT . htmlspecialchars($property['image_url'] ?? 'https://via.placeholder.com/300x200') ?>" class="card-img-top" alt="Property Image" style="height: 200px; object-fit: cover;">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($property['name']) ?></h5>
-                                <p class="card-text"><?= htmlspecialchars($property['description']) ?></p>
+                                <p class="card-text"><?= htmlspecialchars(substr($property['description'], 0, 150)) ?>...</p>
                                 <p class="card-text"><strong>Price:</strong> <?= htmlspecialchars($property['price_per_night']) ?> €/night</p>
                                 <p class="card-text"><strong>Location:</strong> <?= htmlspecialchars($property['city']) ?>, <?= htmlspecialchars($property['country']) ?></p>
                                 <a href="<?= ROOT ?>/properties/showDetails/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-primary">View Details</a>
