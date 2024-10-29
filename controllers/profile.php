@@ -23,6 +23,8 @@ function index()
 
     if ($user) {
         http_response_code(200);
+        /* generate csrf token */
+        $csrf_token = generateCsrfToken();
     } else {
         http_response_code(404);
         $errorCode = 404;
@@ -143,4 +145,72 @@ function update()
         }
     }
     require 'views/profile/edit.php';
+}
+
+function delete()
+{
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        $errorCode = 401;
+        $errorMessage = 'You have to be logged in to delete your account.';
+        require 'views/errors/error.php';
+        return;
+    }
+
+    $user_id = $_SESSION['user_id'];
+    $model = new Users();
+    $user = $model->getById($user_id);
+
+    if (!$user) {
+        http_response_code(404);
+        $errorCode = 404;
+        $errorMessage = 'User not found.';
+        require 'views/errors/error.php';
+        return;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
+        $deletePassword = $_POST['delete_password'] ?? '';
+
+        if (!password_verify($deletePassword, $user['password'])) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Incorrect password. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
+        /* delete profile picture */
+        if (!empty($user['profile_picture'])) {
+            $oldProfilePicturePath = __DIR__ . '/../' . ltrim($user['profile_picture'], '/');
+            if (file_exists($oldProfilePicturePath)) {
+                unlink($oldProfilePicturePath);
+            }
+        }
+
+        if ($model->delete($user_id)) {
+            session_unset();
+            session_destroy();
+            header('Location: ' . ROOT . '/login');
+            exit();
+        } else {
+            http_response_code(500);
+            $errorCode = 500;
+            $errorMessage = 'An error occurred while deleting your account. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+    }
+
+    require 'views/errors/error.php';
 }

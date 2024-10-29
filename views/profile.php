@@ -19,7 +19,6 @@
                     <div class="card-header bg-dark text-white text-center">
                         <h2 class="mb-0">User Profile</h2>
                     </div>
-
                     <div class="card-body">
                         <div class="row">
                             <!-- Profile Picture -->
@@ -49,15 +48,41 @@
                                 <!-- Edit Profile Button -->
                                 <?php if ($_SESSION['user_id'] == $user['user_id']): ?>
                                     <div class="d-grid mt-4">
-                                        <a href="<?= ROOT ?>/profile/update" class="btn btn-primary">
-                                            <i class="bi bi-pencil-square"></i> Edit Profile
-                                        </a>
+                                        <a href="<?= ROOT ?>/profile/update" class="btn btn-primary"><i class="bi bi-pencil-square"></i></i> Edit Profile</a>
+                                        <!-- Delete Account Button -->
+                                        <button type="button" class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#deleteAccountModal"><i class="bi bi-trash"></i> Delete Account</button>
                                     </div>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="<?= ROOT ?>/profile/delete" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                        <div class="mb-3">
+                            <label for="deletePassword" class="form-label">Enter Password:</label>
+                            <input type="password" class="form-control" id="deletePassword" name="delete_password" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
