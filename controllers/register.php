@@ -35,7 +35,7 @@ function index()
 
         /* Handle profile picture */
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture']);
+            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture'], $user);
             $data['profile_picture'] = $profilePicturePath;
         } else {
             $data['profile_picture'] = null;

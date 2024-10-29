@@ -207,7 +207,10 @@ function update($property_id)
                     $image = $imageModel->getById($imageId);
                     if ($image) {
                         /* Delete the image */
-                        unlink(__DIR__ . '/../' . $image['image_url']);
+                        $imagePath = __DIR__ . '/../' . $image['image_url'];
+                        if (file_exists($imagePath)) {
+                            unlink($imagePath);
+                        }
 
                         /* Delete the image record from the database */
                         $imageModel->delete($imageId);
@@ -253,6 +256,7 @@ function delete($property_id)
     }
 
     $model = new Properties();
+    $imageModel = new PropertyImages();
     $property = $model->getById($property_id);
 
     /* Check if the property belongs to the logged-in user */
@@ -282,6 +286,15 @@ function delete($property_id)
             $errorMessage = "You cannot delete this property because it has payments associated with it.";
             require 'views/errors/error.php';
             return;
+        }
+
+        $images = $imageModel->getByPropertyId($property_id);
+        foreach ($images as $image) {
+            $imagePath = __DIR__ . '/../' . $image['image_url'];
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $imageModel->delete($image['image_id']);
         }
 
         /* delete the property */

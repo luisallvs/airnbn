@@ -82,7 +82,7 @@ function update()
         /* Handle profile picture */
         $profilePicturePath = null;
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture']);
+            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture'], $user);
             if (!$profilePicturePath) {
                 $message = "Failed to upload profile picture.";
             }

@@ -34,7 +34,7 @@ function create()
 
         /* Handle profile picture */
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture']);
+            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture'], []);
             $data['profile_picture'] = $profilePicturePath;
         }
 
@@ -86,6 +86,7 @@ function edit($user_id)
     }
 
     $userModel = new Users();
+    $user = $userModel->getById($user_id);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updatedData = [
@@ -97,7 +98,8 @@ function edit($user_id)
 
         /* Check if profile picture was provided */
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture']);
+            // Use the existing uploadProfilePicture function to upload the new picture and delete the old one
+            $profilePicturePath = uploadProfilePicture($_FILES['profile_picture'], $user);
             if ($profilePicturePath) {
                 $updatedData['profile_picture'] = $profilePicturePath;
             } else {
@@ -133,8 +135,23 @@ function delete($user_id)
     }
 
     $userModel = new Users();
+    $user = $userModel->getById($user_id);
 
-    // Attempt to delete the user
+    if ($user) {
+        if (!empty($user['profile_picture'])) {
+            $profilePicturePath = __DIR__ . '/../../' . ltrim($user['profile_picture'], '/');
+            if (file_exists($profilePicturePath)) {
+                unlink($profilePicturePath);
+            }
+        }
+    } else {
+        http_response_code(404);
+        $errorCode = 404;
+        $errorMessage = 'User not found.';
+        require 'views/errors/error.php';
+        exit();
+    }
+
     if ($userModel->delete($user_id)) {
         http_response_code(200);
         header("Location: /admin/users");

@@ -39,7 +39,7 @@ function uploadPropertyImages($files, $property_id, $imageModel, $uploadDir, $al
     return $uploadedImages;
 }
 
-function uploadProfilePicture($profilePictureFile, $uploadDir = __DIR__ . '/../../images/pfp/', $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'], $maxFileSize = 2000000)
+function uploadProfilePicture($profilePictureFile, $user, $uploadDir = __DIR__ . '/../../images/pfp/', $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'], $maxFileSize = 2000000)
 {
     /* Create upload directory if it doesn't exist */
     if (!is_dir($uploadDir)) {
@@ -68,6 +68,15 @@ function uploadProfilePicture($profilePictureFile, $uploadDir = __DIR__ . '/../.
 
     /* Save the image file */
     if (move_uploaded_file($profilePictureFile['tmp_name'], $filePath)) {
+
+        /* Delete the old profile picture if it exists */
+        if (!empty($user['profile_picture'])) {
+            $oldProfilePicturePath = __DIR__ . '/../../' . ltrim($user['profile_picture'], '/');
+            if (file_exists($oldProfilePicturePath)) {
+                unlink($oldProfilePicturePath);
+            }
+        }
+
         return "/images/pfp/" . $fileName;
     }
 
