@@ -29,19 +29,18 @@
                         <p><strong>Max Guests:</strong> <?= htmlspecialchars($property['max_guests']) ?></p>
                         <p><strong>Availability:</strong> <?= htmlspecialchars($property['availability_start']) ?> to <?= htmlspecialchars($property['availability_end']) ?></p>
 
-                        <div class="d-flex justify-content-center gap-3 mt-4">
+                        <div class="d-grid gap-3 mt-4">
                             <!-- Edit Property Button -->
-                            <a href="<?= ROOT ?>/properties/update/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-warning btn-lg">Edit Property</a>
+                            <a href="<?= ROOT ?>/properties/update/<?= htmlspecialchars($property['property_id']) ?>" class="btn btn-warning btn-lg w-100">Edit Property</a>
 
                             <!-- Delete Property Button -->
-                            <form action="<?= ROOT ?>/properties/delete/<?= htmlspecialchars($property['property_id']) ?>" method="POST" class="d-inline">
+                            <form action="<?= ROOT ?>/properties/delete/<?= htmlspecialchars($property['property_id']) ?>" method="POST">
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
-                                <button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure you want to delete this property?')">Delete Property</button>
+                                <button type="submit" class="btn btn-outline-danger btn-lg w-100" onclick="return confirm('Are you sure you want to delete this property?')">Delete Property</button>
                             </form>
-                        </div>
 
-                        <div class="d-grid mt-4">
-                            <a href="<?= ROOT ?>/properties/manage" class="btn btn-secondary">Go Back</a>
+                            <!-- Go Back Button -->
+                            <a href="<?= ROOT ?>/properties/manage" class="btn btn-secondary btn-lg w-100 mt-3">Go Back</a>
                         </div>
                     </div>
                 </div>
