@@ -21,6 +21,7 @@
                     </div>
                     <div class="card-body p-4">
                         <form action="<?= ROOT ?>/payments/submit/<?= htmlspecialchars($reservation_id) ?>" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                             <div class="mb-4">
                                 <label for="method" class="form-label"><strong>Select Payment Method:</strong></label>
                                 <select name="method_id" class="form-select" required>

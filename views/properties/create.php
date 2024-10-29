@@ -21,7 +21,7 @@
                     </div>
                     <div class="card-body">
                         <form action="<?= ROOT ?>/properties/create" method="POST" enctype="multipart/form-data">
-
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                             <!-- Property Details Section -->
                             <h4 class="mb-3">Property Details</h4>
                             <div class="mb-3">

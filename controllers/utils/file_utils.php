@@ -39,7 +39,7 @@ function uploadPropertyImages($files, $property_id, $imageModel, $uploadDir, $al
     return $uploadedImages;
 }
 
-function uploadProfilePicture($profilePictureFile, $uploadDir = __DIR__ . '/../images/pfp/', $allowedExtensions = ['jpg', 'jpeg', 'gif', 'webp'], $maxFileSize = 2000000)
+function uploadProfilePicture($profilePictureFile, $uploadDir = __DIR__ . '/../../images/pfp/', $allowedExtensions = ['jpg', 'jpeg', 'gif', 'webp'], $maxFileSize = 2000000)
 {
     /* Create upload directory if it doesn't exist */
     if (!is_dir($uploadDir)) {

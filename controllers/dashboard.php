@@ -35,5 +35,5 @@ function hostDashboard()
     $recentActivities = $reservationsModel->getRecentActivitiesByHost($user_id);
 
     // Pass the data to the view
-    require 'views/dashboard/host_dashboard.php';
+    require 'views/dashboard/host.php';
 }

@@ -50,8 +50,10 @@
                                 <!-- Pay Now Button (if not paid) -->
                                 <?php if ($reservation['is_paid'] == 0): ?>
                                     <form action="<?= ROOT ?>/payments/create/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="text-center">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                         <button type="submit" class="btn btn-primary btn-lg">Pay Now</button>
                                     </form>
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                 <?php elseif ($reservation['is_paid'] == 1): ?>
                                     <p class="text-success text-center">Thank you! Your payment has been completed.</p>
                                 <?php endif; ?>

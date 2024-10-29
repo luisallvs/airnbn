@@ -33,6 +33,7 @@
 
                         <!-- Login form -->
                         <form action="/login" method="POST" class="mx-auto">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email:</label>
                                 <input type="email" name="email" class="form-control" required placeholder="Enter your email">

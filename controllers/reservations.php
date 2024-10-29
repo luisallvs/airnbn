@@ -1,9 +1,11 @@
 <?php
 
-require_once "models/reservations.php";
-require_once "models/properties.php";
-require_once "models/payments.php";
-require_once "models/paymentMethods.php";
+require_once 'models/reservations.php';
+require_once 'models/properties.php';
+require_once 'models/payments.php';
+require_once 'models/paymentMethods.php';
+
+require_once 'controllers/utils/csrf_utils.php';
 
 /* fucntion to list users reservations */
 
@@ -52,6 +54,9 @@ function create($property_id)
         return;
     }
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     /* fetch unavailable dates */
     $reservationModel = new Reservations();
     $reservations = $reservationModel->getReservationsByProperty($property_id);
@@ -70,6 +75,16 @@ function create($property_id)
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
         $checkIn = $_POST['check_in'] ?? "";
         $checkOut = $_POST['check_out'] ?? "";
 
@@ -162,16 +177,28 @@ function confirm($reservation_id)
         return;
     }
 
-    $model = new Reservations();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
 
-    if ($model->updateReservationStatus($reservation_id, 'confirmed')) {
-        $_SESSION['flash_message'] = "Reservation status updated to Confirmed successfully";
-    } else {
-        $_SESSION['flash_message'] = "Failed to confirm reservation";
+        $model = new Reservations();
+
+        if ($model->updateReservationStatus($reservation_id, 'confirmed')) {
+            $_SESSION['flash_message'] = "Reservation status updated to Confirmed successfully";
+        } else {
+            $_SESSION['flash_message'] = "Failed to confirm reservation";
+        }
+
+        header("Location: /reservations/manage");
+        exit();
     }
-
-    header("Location: /reservations/manage");
-    exit();
 }
 
 function cancel($reservation_id)
@@ -184,16 +211,28 @@ function cancel($reservation_id)
         return;
     }
 
-    $model = new Reservations();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
 
-    if ($model->updateReservationStatus($reservation_id, 'canceled')) {
-        $_SESSION['flash_message'] = "Reservation status updated to Canceled successfully";
-    } else {
-        $_SESSION['flash_message'] = "Failed to cancel reservation";
+        $model = new Reservations();
+
+        if ($model->updateReservationStatus($reservation_id, 'canceled')) {
+            $_SESSION['flash_message'] = "Reservation status updated to Canceled successfully";
+        } else {
+            $_SESSION['flash_message'] = "Failed to cancel reservation";
+        }
+
+        header("Location: /reservations/manage");
+        exit();
     }
-
-    header("Location: /reservations/manage");
-    exit();
 }
 
 
@@ -220,6 +259,9 @@ function showDetails($reservation_id)
         require 'views/errors/error.php';
         return;
     }
+
+    /* Generate CSRF Token */
+    $csrf_token = generateCsrfToken();
 
     /* check if paid */
     $isPaid = $reservation['is_paid'] ? 'Paid' : 'Not Paid';

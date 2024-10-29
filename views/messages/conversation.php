@@ -76,6 +76,7 @@
             </div>
             <div class="chat-form">
                 <form action="<?= ROOT ?>/messages/conversation/<?= htmlspecialchars($receiver_id) ?>/<?= htmlspecialchars($property_id) ?>" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                     <div class="input-group">
                         <textarea name="content" class="form-control" placeholder="Type your message here..." rows="1" required></textarea>
                         <button class="btn btn-primary" type="submit">Send</button>

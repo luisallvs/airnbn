@@ -4,6 +4,8 @@ require_once 'models/reviews.php';
 require_once 'models/reservations.php';
 require_once 'models/properties.php';
 
+require_once 'controllers/utils/csrf_utils.php';
+
 function create($reservation_id)
 {
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'guest') {
@@ -56,6 +58,16 @@ function create($reservation_id)
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
         $data = [
             'user_id' => $_SESSION['user_id'],
             'property_id' => $reservation['property_id'],
@@ -75,6 +87,9 @@ function create($reservation_id)
             return;
         }
     } else {
+        /* generate csrf token */
+        $csrf_token = generateCsrfToken();
+
         $propertyModel = new Properties();
         $property = $propertyModel->getById($reservation['property_id']);
 

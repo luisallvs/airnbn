@@ -4,6 +4,8 @@ require_once 'models/Payments.php';
 require_once 'models/PaymentMethods.php';
 require_once 'models/Reservations.php';
 
+require_once 'controllers/utils/csrf_utils.php';
+
 function create($reservation_id)
 {
     if (!isset($_SESSION['user_id'])) {
@@ -44,6 +46,9 @@ function create($reservation_id)
     $PaymentMethodModel = new PaymentMethods();
     $paymentMethods = $PaymentMethodModel->getAllPaymentMethods();
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     require 'views/payments/create.php';
 }
 
@@ -53,6 +58,17 @@ function submit($reservation_id)
         http_response_code(401);
         $errorCode = 401;
         $errorMessage = 'You have to be logged in.';
+        require 'views/errors/error.php';
+        return;
+    }
+
+    /* validate csrf token */
+    $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+
+    if (!validateCsrfToken($submitted_csrf_token)) {
+        http_response_code(403);
+        $errorCode = 403;
+        $errorMessage = 'Invalid CSRF token. Please try again.';
         require 'views/errors/error.php';
         return;
     }

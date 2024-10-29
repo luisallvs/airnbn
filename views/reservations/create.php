@@ -28,6 +28,7 @@
                         <?php endif; ?>
 
                         <form action="<?= ROOT ?>/reservations/create/<?= htmlspecialchars($property['property_id']) ?>" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                             <!-- Check-in Date -->
                             <div class="mb-4">
                                 <label for="check_in" class="form-label fw-bold">Check-in Date</label>

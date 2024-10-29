@@ -3,6 +3,8 @@
 require_once 'models/users.php';
 require_once 'models/messages.php';
 
+require_once 'controllers/utils/csrf_utils.php';
+
 /* Show a list of conversations for the user */
 function index()
 {
@@ -54,9 +56,23 @@ function conversation($receiver_id, $property_id)
         $messagesModel->markMessagesAsRead($sender_id, $property_id);
     }
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     /* handle message send */
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['content'])) {
-        $content = $_POST['content'];
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
+        $content = htmlspecialchars(trim($_POST['content']));
         $messagesModel->sendMessage($sender_id, $receiver_id, $property_id, $content);
 
         header("Location: " . ROOT . "/messages/conversation/$receiver_id/$property_id");

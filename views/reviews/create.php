@@ -22,6 +22,7 @@
                     </div>
                     <div class="card-body p-4">
                         <form action="<?= ROOT ?>/reviews/create/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
 
                             <!-- Rating Section -->
                             <div class="mb-4">

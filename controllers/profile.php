@@ -1,7 +1,9 @@
 <?php
 
 require_once 'models/Users.php';
-require_once 'controllers/file_utils.php';
+
+require_once 'controllers/utils/file_utils.php';
+require_once 'controllers/utils/csrf_utils.php';
 
 /* Function to display the user profile */
 function index()
@@ -54,7 +56,20 @@ function update()
         return;
     }
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
 
         /* Sanitize input */
         $name = htmlspecialchars(trim($_POST['name'] ?? ''));

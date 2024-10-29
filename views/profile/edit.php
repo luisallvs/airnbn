@@ -27,6 +27,7 @@
                         <?php endif; ?>
 
                         <form action="<?= ROOT ?>/profile/update" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                             <!-- Name -->
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name:</label>

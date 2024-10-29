@@ -1,8 +1,27 @@
 <?php
 
+require_once 'models/users.php';
+
+require_once 'controllers/utils/csrf_utils.php';
+
 function index()
 {
+
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
         /* Sanitize user input */
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];

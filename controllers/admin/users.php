@@ -1,7 +1,7 @@
 <?php
 
 require_once 'models/Users.php';
-require_once 'controllers/file_utils.php';
+require_once 'controllers/utils/file_utils.php';
 
 function index()
 {

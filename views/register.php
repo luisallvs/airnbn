@@ -30,6 +30,7 @@
 
                         <!-- Registration form -->
                         <form action="/register" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
 
                             <!-- Name -->
                             <div class="mb-3">

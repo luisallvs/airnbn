@@ -3,7 +3,9 @@
 require_once 'models/properties.php';
 require_once 'models/propertyImages.php';
 require_once 'models/reviews.php';
-require_once 'controllers/file_utils.php';
+
+require_once 'controllers/utils/file_utils.php';
+require_once 'controllers/utils/csrf_utils.php';
 
 function index()
 {
@@ -51,6 +53,9 @@ function manageSingle($property_id)
         return;
     }
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     require 'views/properties/manageSingle.php';
 }
 
@@ -91,7 +96,19 @@ function create()
         return;
     }
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
 
         /* load model */
         $model = new Properties();
@@ -149,11 +166,24 @@ function update($property_id)
         return;
     }
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     /* fetch existing images */
     $imageModel = new PropertyImages();
     $images = $imageModel->getByPropertyId($property_id);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
+
         /* Sanitize user input */
         $data = [
             'property_id' => $property_id,
@@ -234,23 +264,37 @@ function delete($property_id)
         return;
     }
 
-    if ($model->hasActiveOrFuturePayments($property_id)) {
-        http_response_code(403);
-        $errorCode = 403;
-        $errorMessage = "You cannot delete this property because it has payments associated with it.";
-        require 'views/errors/error.php';
-        return;
-    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        /* validate csrf token */
+        $submitted_csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCsrfToken($submitted_csrf_token)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = 'Invalid CSRF token. Please try again.';
+            require 'views/errors/error.php';
+            return;
+        }
 
-    if ($model->delete($property_id, $_SESSION['user_id'])) {
-        http_response_code(200);
-        header('Location: /properties/manage');
-        return;
-    } else {
-        http_response_code(500);
-        $errorCode = 500;
-        $errorMessage = "Something went wrong on our end. Please try again later.";
-        require 'views/errors/error.php';
-        return;
+        /* check if the property has active or future payments */
+        if ($model->hasActiveOrFuturePayments($property_id)) {
+            http_response_code(403);
+            $errorCode = 403;
+            $errorMessage = "You cannot delete this property because it has payments associated with it.";
+            require 'views/errors/error.php';
+            return;
+        }
+
+        /* delete the property */
+        if ($model->delete($property_id, $_SESSION['user_id'])) {
+            http_response_code(200);
+            header('Location: /properties/manage');
+            return;
+        } else {
+            http_response_code(500);
+            $errorCode = 500;
+            $errorMessage = "Something went wrong on our end. Please try again later.";
+            require 'views/errors/error.php';
+            return;
+        }
     }
 }

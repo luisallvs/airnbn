@@ -35,6 +35,7 @@
 
                             <!-- Delete Property Button -->
                             <form action="<?= ROOT ?>/properties/delete/<?= htmlspecialchars($property['property_id']) ?>" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                 <button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure you want to delete this property?')">Delete Property</button>
                             </form>
                         </div>

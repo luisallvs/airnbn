@@ -65,19 +65,23 @@
                                     <?php if ($reservation['status'] === 'confirmed'): ?>
                                         <!-- Allow canceling a confirmed reservation -->
                                         <form action="<?= ROOT ?>/reservations/cancel/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                             <button type="submit" class="btn btn-sm btn-warning">Cancel</button>
                                         </form>
                                     <?php elseif ($reservation['status'] === 'canceled'): ?>
                                         <!-- Allow confirming a canceled reservation -->
                                         <form action="<?= ROOT ?>/reservations/confirm/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                             <button type="submit" class="btn btn-sm btn-primary">Confirm</button>
                                         </form>
                                     <?php else: ?>
                                         <!-- Confirm and Cancel options for pending reservations -->
                                         <form action="<?= ROOT ?>/reservations/confirm/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                             <button type="submit" class="btn btn-sm btn-success">Confirm</button>
                                         </form>
                                         <form action="<?= ROOT ?>/reservations/cancel/<?= htmlspecialchars($reservation['reservation_id']) ?>" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>"> <!-- CSRF token -->
                                             <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
                                         </form>
                                     <?php endif; ?>
