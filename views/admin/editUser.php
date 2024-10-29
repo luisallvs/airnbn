@@ -68,7 +68,7 @@
                             <!-- user profile picture -->
                             <div class="mb-3">
                                 <label for="profile_picture" class="form-label">Upload New Profile Picture:</label>
-                                <input type="file" name="profile_picture" class="form-control">
+                                <input type="file" name="profile_picture" class="form-control" accept=".jpg, .jpeg, .png, .gif, .webp">
                             </div>
 
                             <!-- current profile picture -->

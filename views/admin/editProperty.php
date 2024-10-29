@@ -98,7 +98,7 @@
                             <!-- new images -->
                             <h4 class="mt-4">Upload New Images</h4>
                             <div class="mb-3">
-                                <input type="file" name="property_images[]" class="form-control" multiple>
+                                <input type="file" name="property_images[]" class="form-control" accept=".jpg, .jpeg, .png, .webp, .avif" multiple>
                             </div>
 
                             <!-- submit and back buttons -->

@@ -72,7 +72,7 @@
                             <!-- Profile Picture -->
                             <div class="mb-3">
                                 <label for="profile_picture" class="form-label">Profile Picture:</label>
-                                <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                                <input type="file" name="profile_picture" class="form-control" accept=".jpg, .jpeg, .png, .gif, .webp">
                             </div>
 
                             <!-- Buttons -->

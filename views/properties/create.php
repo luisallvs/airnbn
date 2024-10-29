@@ -80,7 +80,7 @@
                             <h4 class="mt-4 mb-3">Property Images</h4>
                             <div class="mb-3">
                                 <label for="property_images" class="form-label">Upload Images:</label>
-                                <input type="file" class="form-control" id="property_images" name="property_images[]" multiple accept="image/*" required>
+                                <input type="file" class="form-control" id="property_images" name="property_images[]" multiple accept=".jpg, .jpeg, .png, .webp, .avif" required>
                             </div>
 
                             <!-- Actions -->

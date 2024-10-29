@@ -101,7 +101,7 @@
 
                             <div class="mb-3">
                                 <label for="property_images" class="form-label">Upload New Images:</label>
-                                <input type="file" name="property_images[]" class="form-control" multiple accept="image/*">
+                                <input type="file" name="property_images[]" class="form-control" accept=".jpg, .jpeg, .png, .webp, .avif" multiple>
                             </div>
 
                             <!-- Actions -->
