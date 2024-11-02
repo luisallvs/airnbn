@@ -23,25 +23,6 @@ class Payments extends Base
         ]);
     }
 
-    public function getPaymentById($payment_id)
-    {
-        $query = $this->db->prepare("
-        SELECT 
-            payment_id, 
-            reservation_id, 
-            method_id, 
-            amount, 
-            payment_date, 
-            status 
-        FROM 
-            payments 
-        WHERE 
-            payment_id = ?
-    ");
-        $query->execute([$payment_id]);
-        return $query->fetch();
-    }
-
     /* Get total earnings by host */
     public function getTotalEarningsByHost($user_id)
     {

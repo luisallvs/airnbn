@@ -20,21 +20,6 @@ class PropertyImages extends Base
         ]);
     }
 
-    public function getById($image_id)
-    {
-        $query = $this->db->prepare("
-            SELECT 
-                images_id,
-                property_id,
-                image_url
-            FROM 
-                property_images 
-            WHERE 
-                images_id = ?
-        ");
-        $query->execute([$image_id]);
-        return $query->fetch();
-    }
 
     public function getByPropertyId($property_id)
     {
