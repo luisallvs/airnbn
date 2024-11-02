@@ -159,6 +159,9 @@ function manage()
     $user_id = $_SESSION['user_id'];
     $model = new Reservations();
 
+    /* generate csrf token */
+    $csrf_token = generateCsrfToken();
+
     $reservations = $model->getReservationsByHost($user_id);
 
     http_response_code(200);

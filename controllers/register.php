@@ -5,6 +5,11 @@ require_once 'models/Users.php';
 require_once 'controllers/utils/file_utils.php';
 require_once 'controllers/utils/csrf_utils.php';
 
+require_once 'vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 function index()
 {
     /* generate csrf token */
@@ -68,6 +73,33 @@ function index()
 
                     $user = $model->getById($createdUserId);
                     $_SESSION['user_profile_picture'] = $user['profile_picture'];
+
+                    /* send confirmation email */
+                    $mail = new PHPMailer(true);
+
+                    try {
+                        /* Server settings */
+                        $mail->isSMTP();
+                        $mail->Host       = ENV['SMTP_HOST'];
+                        $mail->SMTPAuth   = true;
+                        $mail->Username   = ENV['SMTP_USER'];
+                        $mail->Password   = ENV['SMTP_PASSWORD'];
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port       = 587;
+
+                        /* Recipients */
+                        $mail->setFrom(ENV['SMTP_USER'], 'Airnbn Team');
+                        $mail->addAddress($data['email'], $data['name']);
+
+                        /* Email content */
+                        $mail->isHTML(true);
+                        $mail->Subject = 'Registration Confirmation';
+                        $mail->Body    = 'Hello ' . htmlspecialchars($data['name']) . '!!<br><br>Thank you for registering your account at Airnbn. Your account has been successfully created!<br><br>Best Regards,<br>The Airnbn Team';
+
+                        $mail->send();
+                    } catch (Exception $error) {
+                        error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+                    }
 
                     http_response_code(200);
                     header('Location: /');
