@@ -258,40 +258,6 @@ class Reservations extends Base
         return $query->execute([$isPaid, $reservationId]);
     }
 
-
-    public function isAvailable($property_id, $check_in, $check_out)
-    {
-        $query = $this->db->prepare("
-        SELECT 
-            reservation_id
-        FROM 
-            reservations 
-        WHERE 
-            property_id = ? 
-            AND status IN ('pending', 'confirmed')
-            AND (
-                (check_in < ? AND check_out > ?)  -- new reservaton check in falls within an existing reservation.
-                OR 
-                (check_in < ? AND check_out > ?)  -- new reservation check out falls within an existing reservation.
-                OR
-                (check_in >= ? AND check_out <= ?)  -- new reservation completely overlaps an existing reservation.
-            )
-    ");
-
-        $query->execute([
-            $property_id,
-            $check_out,  // check if the new check out date overlaps with existing reservations.
-            $check_in,   // check if the new check in date overlaps with existing reservations.
-            $check_out,  // check if the new check out date falls within an existing reservation.
-            $check_in,   // check if the new check in date falls within an existing reservation.
-            $check_in,   // check if the new reservation completely overlaps an existing reservation.
-            $check_out   // check if the new reservation completely overlaps an existing reservation.
-        ]);
-
-        /* If no rows are returned then the reservation is available */
-        return $query->rowCount() === 0;
-    }
-
     /* Get recent activities by host */
     public function getRecentActivitiesByHost($user_id)
     {

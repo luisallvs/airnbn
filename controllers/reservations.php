@@ -92,9 +92,24 @@ function create($property_id)
         $today = date('Y-m-d');
 
         /* validate dates */
-        if (empty($checkIn) || empty($checkOut) || strtotime($checkIn) >= strtotime($checkOut)) {
+        if (empty($checkIn) || empty($checkOut)) {
+            http_response_code(400);
+            $message = "Check-in and check-out dates cannot be empty.";
+            require 'views/reservations/create.php';
+            return;
+        }
+
+        if (strtotime($checkIn) >= strtotime($checkOut)) {
             http_response_code(400);
             $message = "Invalid dates. Please ensure the check-out date is after the check-in date.";
+            require 'views/reservations/create.php';
+            return;
+        }
+
+        /* Ensure the check-in date is within the property's available range */
+        if (strtotime($checkIn) > strtotime($property['availability_end']) || strtotime($checkOut) > strtotime($property['availability_end'])) {
+            http_response_code(400);
+            $message = "The selected dates are beyond the property's availability.";
             require 'views/reservations/create.php';
             return;
         }
@@ -107,11 +122,20 @@ function create($property_id)
             return;
         }
 
-        if (!$model->isAvailable($property_id, $checkIn, $checkOut)) {
-            http_response_code(400);
-            $message = "The property is not available for the selected dates.";
-            require 'views/reservations/create.php';
-            return;
+        /* Ensure the check-in and check-out dates are not already reserved */
+        $requestedPeriod = new DatePeriod(
+            new DateTime($checkIn),
+            new DateInterval('P1D'),
+            (new DateTime($checkOut))->modify('+1 day')
+        );
+
+        foreach ($requestedPeriod as $date) {
+            if (in_array($date->format('Y-m-d'), $unavailableDates)) {
+                http_response_code(400);
+                $message = "The property is not available for the selected dates.";
+                require 'views/reservations/create.php';
+                return;
+            }
         }
 
         /* Calculate the total price */
